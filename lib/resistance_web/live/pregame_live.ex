@@ -1,4 +1,4 @@
-defmodule ResistanceWeb.GameLive do
+defmodule ResistanceWeb.PregameLive do
   use ResistanceWeb, :live_view
   require Logger
 
