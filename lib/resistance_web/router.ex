@@ -38,7 +38,8 @@ defmodule ResistanceWeb.Router do
   scope "/", ResistanceWeb do
     pipe_through :browser
 
-    live "/play", GameLive, :index
+    live "/play", GameLive, :pregame
+    # live "/play/:game_id", GameLive, :game
   end
 
 end
