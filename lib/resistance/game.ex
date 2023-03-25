@@ -4,20 +4,24 @@ defmodule Game.Server do
   Store game state
   """
 
-  def start_link(_) do
-    GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
+  def start_link(player_names) do
+    GenServer.start_link(__MODULE__, player_names, name: __MODULE__)
   end
 
-  def init(state) do
+  @impl true
+  def init(player_names) do
+    # feel free to amend the state
+    state = %{
+      players: Enum.map(player_names, fn name -> {name, :good} end),   #[string, :good | :bad] #TODO: randomly assign good/bad
+      missions: [],       #[:success | :fail]   #current_mission = length(missions) + 1
+      current_king: nil,    #string
+      current_team: nil,      #[string]
+      current_vote: nil,      #[{string (player), :approve | :reject}]
+      current_mission_votes: [],  #[:success | :fail]
+    }
     {:ok, state}
   end
 
-  def handle_call({:set, key, value}, _from, state) do
-    {:reply, :ok, Map.put(state, key, value)}
-  end
 
-  def handle_call({:get, key}, _from, state) do
-    {:reply, Map.get(state, key), state}
-  end
 
 end
