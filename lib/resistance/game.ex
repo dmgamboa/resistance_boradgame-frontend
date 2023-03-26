@@ -11,6 +11,15 @@ defmodule Game.Server do
       :role,
       :is_king
     ]
+
+    def new(name, role, is_king) do
+      %Player{name: name, role: role, is_king: is_king}
+    end
+  end
+
+  @impl true
+  def handle_call(:get_players, _from, state) do
+    {:reply, state.players, state}
   end
 
   def start_link(player_names) do
@@ -24,6 +33,10 @@ defmodule Game.Server do
 
   def get_player_info(player_name) do
     GenServer.call(__MODULE__, {:get_player_info, player_name})
+  end
+
+  def get_players() do
+    GenServer.call(__MODULE__, :get_players)
   end
 
   def get_king() do
@@ -50,13 +63,25 @@ defmodule Game.Server do
     GenServer.cast(__MODULE__, {:vote_for_mission, player_name, vote})
   end
 
+  def ramdomly_assign_roles(player_names) do
+    num_bad = Enum.count(player_names) / 3 |> Float.ceil |> round
 
+    shuffled_players = Enum.shuffle(player_names)
+    Enum.map(shuffled_players, fn name ->
+      index = Enum.find_index(shuffled_players, &(&1 == name))
+      if index < num_bad do
+        Player.new(name, :bad, false)
+      else
+        Player.new(name, :good, false)
+      end
+    end)
+  end
 
   @impl true
   def init(player_names) do
     # feel free to amend the state
     state = %{
-      players: Enum.map(player_names, fn name -> {name, :good} end),   #[string, :good | :bad] #TODO: randomly assign good/bad
+      players: ramdomly_assign_roles(player_names),   #[string, :good | :bad] #TODO: randomly assign good/bad
       missions: [],       #[:success | :fail]   #current_mission = length(missions) + 1
       current_king: nil,    #string
       current_team: nil,      #[string]
