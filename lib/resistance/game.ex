@@ -17,36 +17,36 @@ defmodule Game.Server do
     GenServer.start_link(__MODULE__, player_names, name: __MODULE__)
   end
 
-  def remove_player(game, player_name) do
+  def remove_player(player_name) do
     GenServer.cast(__MODULE__, {:remove_player, player_name})
 
   end
 
-  def get_player_info(game, player_name) do
+  def get_player_info(player_name) do
     GenServer.call(__MODULE__, {:get_player_info, player_name})
   end
 
-  def get_king(game) do
+  def get_king() do
     GenServer.call(__MODULE__, :get_king)
   end
 
-  def add_quest_member(game, player_name) do
+  def add_quest_member(player_name) do
     GenServer.cast(__MODULE__, {:add_quest_member, player_name})
   end
 
-  def remove_quest_member(game, player_name) do
+  def remove_quest_member(player_name) do
     GenServer.cast(__MODULE__, {:remove_quest_member, player_name})
   end
 
-  def confirm_team(game) do
+  def confirm_team() do
     GenServer.cast(__MODULE__, :confirm_team)
   end
 
-  def vote_for_team(game, player_name, vote) do
+  def vote_for_team(player_name, vote) do
     GenServer.cast(__MODULE__, {:vote_for_team, player_name, vote})
   end
 
-  def vote_for_mission(game, player_name, vote) do
+  def vote_for_mission(player_name, vote) do
     GenServer.cast(__MODULE__, {:vote_for_mission, player_name, vote})
   end
 
