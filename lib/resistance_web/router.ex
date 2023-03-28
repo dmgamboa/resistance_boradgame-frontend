@@ -17,29 +17,8 @@ defmodule ResistanceWeb.Router do
   scope "/", ResistanceWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
-  end
-
-  # Other scopes may use custom stacks.
-  # scope "/api", ResistanceWeb do
-  #   pipe_through :api
-  # end
-
-  # Enable Swoosh mailbox preview in development
-  if Application.compile_env(:resistance, :dev_routes) do
-
-    scope "/dev" do
-      pipe_through :browser
-
-      forward "/mailbox", Plug.Swoosh.MailboxPreview
-    end
-  end
-
-  scope "/", ResistanceWeb do
-    pipe_through :browser
-
-    live "/play", PregameLive, :pregame
-    # live "/play/:game_id", GameLive, :game
+    live "/", HomeLive, :home
+    live "/lobby", LobbyLive, :lobby
   end
 
 end

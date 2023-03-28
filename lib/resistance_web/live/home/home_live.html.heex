@@ -1,0 +1,47 @@
+<div class="home">
+    <div class="bg">
+        <img src={ ~p"/images/backgrounds/menu-bg.jpg" } alt="Castle entrance">
+    </div>
+
+    <div class="logo">
+        <img src={ ~p"/images/components/logo.png" } alt="Avalon logo">
+    </div>
+
+    <div class="menu">
+        <div class="banner">
+            <img
+                src={ ~p"/images/components/banner.svg" }
+                alt="Medieval banner" />
+        </div>
+
+        <div class="btn-group">
+            <.button  phx-click={show_modal("play_modal")}>Play</.button>
+            <.button phx-click={show_modal("help_modal")}>Help</.button>
+            <.button phx-click={show_modal("credits_modal")}>Credits</.button>
+        </div>
+    </div>
+
+
+    <.modal id="play_modal">
+        <:title>
+            Who goes there?
+        </:title>
+        <.simple_form for={@form} phx-submit="join">
+            <.input
+                field={@form[:name]}
+                label="Enter your name"
+                placeholder="Ser Ulrich von Liechtenstein"/>
+            <:actions>
+                <.button>Join Lobby</.button>
+            </:actions>
+        </.simple_form>
+    </.modal>
+
+    <.modal id="help_modal">
+        <h1>Help</h1>
+    </.modal>
+
+    <.modal id="credits_modal">
+        <h1>Credits</h1>
+    </.modal>
+</div>

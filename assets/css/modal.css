@@ -1,0 +1,28 @@
+.avalon-modal {
+    display: none;
+    background-color: #282834;
+    border: 7.5px solid #FFC93B;
+    border-radius: 1.5rem;
+    color: #FFF;
+    background: linear-gradient(
+        to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
+        url("/images/backgrounds/modal-bg.jpg");
+}
+
+.avalon-modal label {
+    color: #FFF;
+}
+
+.avalon-modal .title {
+    font-size: 2rem;
+    text-shadow: 2px 3px 5px #000;
+    color: #FFC93B;
+}
+
+.avalon-modal .close-icon {
+    color: #FFC93B;
+}
+
+.avalon-modal .btn-group {
+    justify-content: center;
+}
