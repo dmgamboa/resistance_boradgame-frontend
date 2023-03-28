@@ -1,0 +1,29 @@
+.avalon-btn {
+    display: flex;
+    height: 60px;
+    color: #FFC93B;
+    min-width: 200px;
+}
+
+.avalon-btn:hover {
+    filter: drop-shadow(0.05rem 0.25rem 0.15rem #000);
+}
+
+.avalon-btn:hover .mid {
+    color: white;
+    font-weight: bold;
+}
+
+.avalon-btn .mid {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 3px solid #FFC93B;
+    border-bottom: 3px solid #FFC93B;
+    background-color: #282834;
+}
+
+.avalon-btn .right {
+    transform: rotate(180deg);
+}
