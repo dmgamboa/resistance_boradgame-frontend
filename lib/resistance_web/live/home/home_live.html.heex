@@ -38,10 +38,27 @@
     </.modal>
 
     <.modal id="help_modal">
-        <h1>Help</h1>
+        <:title>
+            How to Play
+        </:title>
     </.modal>
 
     <.modal id="credits_modal">
-        <h1>Credits</h1>
+        <:title>
+            Credits
+        </:title>
+    </.modal>
+
+    <.modal id="lobby_full_modal">
+        <:title>
+            Sorry
+        </:title>
+
+        <p>The lobby is full.</p>
+        <p>Please try again later.</p>
+
+        <:confirm>
+            <.button>OK</.button>
+        </:confirm>
     </.modal>
 </div>
