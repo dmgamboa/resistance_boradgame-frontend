@@ -1,0 +1,24 @@
+{
+    "genieai.personalizedName": "AI Assistant",
+    "genieai.openai.model": "gpt-4",
+    "genieai.openai.temperature": 0.5,
+    "python.analysis.packageIndexDepths": [
+        
+        {
+            "name": "sklearn",
+            "depth": 2
+        },
+        {
+            "name": "matplotlib",
+            "depth": 2
+        },
+        {
+            "name": "scipy",
+            "depth": 2
+        },
+        {
+            "name": "django",
+            "depth": 2
+        }
+    ]
+}
