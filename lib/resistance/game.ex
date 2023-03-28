@@ -190,7 +190,7 @@ defmodule Game.Server do
     %{
       players: updated_players,
       mission_results:
-        case do
+        case mission_result do
           nil -> state.mission_results
           _ -> state.mission_results ++ [mission_result]
         end,
