@@ -15,10 +15,7 @@ defmodule Game.Server do
   @doc """
   Store game state
   """
-
-  #public APIs
-
-  def start_link(player_names) do
+  in the list
     GenServer.start_link(__MODULE__, player_names, name: __MODULE__)
   end
 
@@ -63,15 +60,15 @@ defmodule Game.Server do
 
   @doc """
   return a list of players, with 1/3 of them being bad and the rest being good
-  assign the first player in the list to be the king
+  assign the first_king to be the king
   """
-  defp make_players(player_names) do
+  defp make_players(player_names, first_king) do
     num_bad = Enum.count(player_names) / 3 |> Float.ceil |> round
     num_good = length(player_names) - num_bad
     roles = Enum.shuffle(List.duplicate(:good, num_good) ++ List.duplicate(:bad, num_bad))
 
     Enum.zip_with(player_names, roles, fn name, role ->
-      if name == List.first(player_names) do
+      if name == first_king do
         Player.new(name, role, true)
       else
         Player.new(name, role, false)
@@ -80,12 +77,12 @@ defmodule Game.Server do
   end
 
   @impl true
-  def init([king | _] = player_names) do
-    # TODO: remove current_king, use the function find_king instead
+  def init(player_names) do
+    first_king = Enum.random(player_names)
     state = %{
-      players: make_players(player_names),   # a list of Player, order never change during the game
+      players: make_players(player_names, first_king),   # a list of Player, order never change during the game
       mission_results: [],       #[:success | :fail]   #current_mission = length(mission_results) + 1
-      current_king: king, # a string, player's name
+      current_king: first_king, # a string, player's name
       current_team: [],      #[string (player name)]
       current_vote: [],      #[{string (player name), :approve | :reject}]
       current_mission_votes: [],  #[:success | :fail]
@@ -143,7 +140,7 @@ defmodule Game.Server do
   def handle_cast({:vote_for_team, player_name, vote}, state) do
     new_vote = [{player_name, vote} | state.current_vote]
     if length(new_vote) == length(state.players) do # everyone has voted
-      half = length(state.players) / 2 |> Float.ceil |> round
+      half = length(state.players) / 2 |> Float.floor |> round
       if Enum.count(new_vote, fn {_, vote} -> vote == :approve end) > half do
         broadcast(:team_approved, new_vote)
         {:noreply, %{state | current_vote: new_vote}}
