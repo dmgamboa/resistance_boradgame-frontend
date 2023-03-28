@@ -15,7 +15,10 @@ defmodule Game.Server do
   @doc """
   Store game state
   """
-  in the list
+
+  #public APIs
+
+  def start_link(player_names) do
     GenServer.start_link(__MODULE__, player_names, name: __MODULE__)
   end
 
