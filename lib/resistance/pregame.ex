@@ -20,12 +20,11 @@ defmodule Pregame.Server do
 
   @impl true
   def handle_cast({:toggle_ready, socket}, state) do
-    {name, ready} = Map.get(state,socket)
+    {name, ready} = Map.get(state, socket.id)
     new_state = Map.put(state, socket, {name, !ready})
-    if Enum.all?(new_state, fn {_, ready} -> ready end) do
-      broadcast(:start_game, :ok)
-    else
-      broadcast(:new_ready_player, socket)
+    case Enum.all?(new_state, fn {_, ready} -> ready end) do
+      true -> broadcast(:start_game, :ok)
+      _ -> broadcast(:update, new_state)
     end
     {:noreply, new_state}
   end
@@ -35,14 +34,20 @@ defmodule Pregame.Server do
     case Enum.count(state) == 5 do
       true -> {:reply, :lobby_full, state}
       _ ->
-        broadcast(:new_player, name)
-        {:reply, :ok, Map.put(state, socket.id, name)}
+        new_state = Map.put(state, socket.id, {name, false})
+        broadcast(:update, new_state)
+        {:reply, :ok, new_state}
     end
   end
 
   @impl true
   def handle_call(:get_players, _from, state) do
     {:reply, state, state}
+  end
+
+  @impl true
+  def handle_call({:is_player, socket}, _from, state) do
+    {:reply, Map.get(state, socket.id) != nil, state}
   end
 
   @impl true
@@ -54,8 +59,14 @@ defmodule Pregame.Server do
     end
   end
 
+  # Client API
+
   def add_player(socket, name) do
     GenServer.call(__MODULE__, {:add_player, socket, name})
+  end
+
+  def is_player(socket) do
+    GenServer.call(__MODULE__, {:is_player, socket})
   end
 
   def get_players() do

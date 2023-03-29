@@ -12,6 +12,7 @@
 
 /* Pages */
 @import url("home.css");
+@import url("lobby.css");
 
 body, html {
     font-family: 'Cormorant', serif;

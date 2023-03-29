@@ -14,6 +14,10 @@
     font-weight: bold;
 }
 
+.avalon-btn > * {
+    height: 60px;
+}
+
 .avalon-btn .mid {
     flex: 1;
     display: flex;
