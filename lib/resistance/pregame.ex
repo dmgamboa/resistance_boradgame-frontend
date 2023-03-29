@@ -69,6 +69,7 @@ defmodule Pregame.Server do
   end
 
 
+  @spec subscribe :: :ok | {:error, {:already_registered, pid}}
   def subscribe() do
     Phoenix.PubSub.subscribe(Resistance.PubSub, "pregame")
   end
