@@ -72,13 +72,16 @@ defmodule Game.Server do
   end
 
   @doc """
-    add a player's vote to the current vote list. If everyone has voted, broadcast the vote result
+    add a player's vote to the current vote list. If everyone has voted, broadcast if the team is approved or not
   """
   def vote_for_team(player_name, vote) do
     GenServer.cast(__MODULE__, {:vote_for_team, player_name, vote})
   end
 
 
+  @doc """
+    menbers of the current team vote for the mission. If everyone has voted, broadcast if the mission is successful or not
+  """
   def vote_for_mission(vote) do
     GenServer.cast(__MODULE__, {:vote_for_mission, vote})
   end
