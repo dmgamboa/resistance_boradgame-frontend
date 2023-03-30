@@ -14,8 +14,9 @@ defmodule Pregame.Server do
 
   @impl true
   def handle_cast({:remove_player, socket}, state) do
-    broadcast(:remove_player, Map.get(state, socket))
-    {:noreply, Map.delete(state, socket)}
+    new_state = Map.delete(state, socket.id)
+    broadcast(:update, new_state)
+    {:noreply, new_state}
   end
 
   @impl true
@@ -31,12 +32,17 @@ defmodule Pregame.Server do
 
   @impl true
   def handle_call({:add_player, socket, name}, _from, state) do
-    case Enum.count(state) == 5 do
-      true -> {:reply, :lobby_full, state}
-      _ ->
-        new_state = Map.put(state, socket.id, {name, false})
-        broadcast(:update, new_state)
-        {:reply, :ok, new_state}
+    if name_taken(name, state) do
+      {:reply, {:error, "Name is already taken."}, state}
+    else
+
+      case Enum.count(state) == 5 do
+        true -> {:reply, :lobby_full, state}
+        _ ->
+          new_state = Map.put(state, socket.id, {name, false})
+          broadcast(:update, new_state)
+          {:reply, :ok, new_state}
+      end
     end
   end
 

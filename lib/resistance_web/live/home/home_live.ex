@@ -8,14 +8,16 @@ defmodule ResistanceWeb.HomeLive do
     {:ok, assign(socket, %{form: form})}
   end
 
-  # TODO: Check if name is valid
-  # @impl true
-  # def handle_event("validate", %{"name" => name}, socket) do
-  #   case Pregame.Server.validate_name(name) do
-  #     {:error, msg} -> {:noreply, assign(socket, )}
-  #     _ -> {:noreply, socket}
-  #   end
-  # end
+  @impl true
+  def handle_event("validate", %{"name" => name} = param, socket) do
+    case Pregame.Server.validate_name(name) do
+      {:error, msg} ->
+        {:noreply, assign(socket, :form, to_form(param, errors: [name: {msg, []}]))}
+
+      _ ->
+        {:noreply, assign(socket, :form, to_form(param))}
+    end
+  end
 
   # TODO: Don't trigger rest of "join" handler if there are errors in the form
   # @impl true
@@ -24,12 +26,17 @@ defmodule ResistanceWeb.HomeLive do
   # end
 
   @impl true
-  def handle_event("join", %{"name" => name}, socket) do
+  def handle_event("join", %{"name" => name} = param, socket) do
     case Pregame.Server.add_player(socket, name) do
       :lobby_full ->
         # TODO: Show Lobby Full Modal
         {:noreply, socket}
-      _ -> {:noreply, push_navigate(socket, to: "/lobby")}
+
+      {:error, msg} ->
+        {:noreply, assign(socket, :form, to_form(param, errors: [name: {msg, []}]))}
+
+      _ ->
+        {:noreply, push_navigate(socket, to: "/lobby")}
     end
   end
 end
