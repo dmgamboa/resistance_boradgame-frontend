@@ -1,0 +1,68 @@
+<div class="lobby">
+    <div class="bg">
+        <img src={ ~p"/images/backgrounds/lobby-bg.jpg" } alt="Castle entrance">
+    </div>
+
+    <div class="text">
+        <h1 class="title">Lobby (<%= Enum.count(@players) %> / 5 players)</h1>
+        <h2 class="subtitle">
+            <%= cond do
+                @time_to_start == nil -> "Waiting for more players..."
+                true -> "Game starting in #{@time_to_start}"
+            end %>
+        </h2>
+    </div>
+
+    <div class="players">
+        <%= Map.values(@players)
+            ++ (List.duplicate({"", false}, 5 - Enum.count(@players)))
+            |> Enum.with_index()
+            |> Enum.map(fn {{n, r}, i} -> %>
+            <div class={ cond do
+                    n == "" -> "player empty"
+                    r -> "player ready"
+                    true -> "player unready"
+                end }
+            >
+                <div class="avatar">
+                    <img
+                        class="frame-bg"
+                        src={ ~p"/images/components/avatar-bg.svg" }
+                        alt="Frame" />
+                    <img
+                        class="frame empty"
+                        src={ ~p"/images/components/avatar-frame.svg" }
+                        alt="Frame" />
+                    <img
+                        class="frame ready"
+                        src={ ~p"/images/components/avatar-frame-ready.svg" }
+                        alt="Frame" />
+                    <img
+                        class="frame unready"
+                        src={ ~p"/images/components/avatar-frame-unready.svg" }
+                        alt="Frame" />
+                    <img
+                        class="character"
+                        src={ static_path(@socket, "/images/avatars/0#{i+1}.png") }
+                        alt="Avatar" />
+                </div>
+                <span class="name">
+                    <%= n %>
+                </span>
+            </div>
+        <% end) %>
+    </div>
+
+    <.button class="ready-toggle" phx-click="toggle_ready">
+        <%=
+            case Map.get(@players, @socket.id) do
+                nil -> "Ready"
+                {_n, r} ->
+                    case r do
+                        true -> "Not Ready"
+                        false -> "Ready"
+                    end
+            end
+        %>
+    </.button>
+</div>
