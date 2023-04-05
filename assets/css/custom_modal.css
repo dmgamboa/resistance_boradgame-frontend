@@ -1,0 +1,13 @@
+.credits-modal.avalon-modal {
+    background: linear-gradient(
+        to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
+        /* TODO: Change this */
+        bottom / cover url("/images/backgrounds/menu-bg.jpg");
+}
+
+.help-modal.avalon-modal {
+    background: linear-gradient(
+        to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
+        /* TODO: Change this */
+        bottom / cover url("/images/backgrounds/menu-bg.jpg")
+}

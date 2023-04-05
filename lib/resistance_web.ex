@@ -86,6 +86,7 @@ defmodule ResistanceWeb do
       # Core UI components and translation
       import ResistanceWeb.CoreComponents
       import ResistanceWeb.Gettext
+      import ResistanceWeb.CustomModals
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
