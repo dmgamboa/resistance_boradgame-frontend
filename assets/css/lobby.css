@@ -1,0 +1,94 @@
+.lobby {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.lobby h1 {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+
+    filter: drop-shadow(0.05rem 0.05rem 0.0rem #281710);
+    filter: drop-shadow(-0.05rem -0.05rem 0.02rem #281710);
+}
+
+.lobby h2 {
+    font-size: 1.5rem;
+    filter: drop-shadow(0.05rem 0.05rem 0.0rem #281710);
+    filter: drop-shadow(-0.05rem -0.05rem 0.02rem #281710);  
+}
+
+.lobby .players {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.lobby .player {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 2rem 2rem 0;
+}
+
+.lobby .player .avatar {
+    position: relative;
+    margin-bottom: 0.5rem;
+    min-width: 200px;
+
+}
+
+.lobby .player .avatar .character {
+    display: none;
+    z-index: -1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    padding: 2rem;
+    transform: translate(-50%, -50%);   
+}
+
+.lobby .player:not(.empty) .avatar .character {
+    display: block;
+}
+
+.lobby .player .avatar .frame-bg {
+    z-index: -2;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+.lobby .player .avatar .frame {
+    z-index: 2;
+    filter: drop-shadow(0.05rem 0.25rem 0.15rem #000);
+}
+
+.lobby .player.empty .avatar .frame:not(.empty) {
+    display: none;
+}
+
+.lobby .player.ready .avatar .frame:not(.ready) {
+    display: none;
+}
+
+.lobby .player.unready .avatar .frame:not(.unready) {
+    display: none;
+}
+
+.lobby .player .name {
+    font-weight: bold;
+    filter: drop-shadow(0.05rem 0.05rem 0.5rem #281710);
+    filter: drop-shadow(-0.05rem -0.05rem 0.5rem #281710);
+}
+
+.lobby button {
+    max-width: 50%;
+}

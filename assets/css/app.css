@@ -2,4 +2,46 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-/* This file is for your main application CSS */
+/* Fonts */
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@400;700&family=Cormorant:ital,wght@0,400;0,500;1,400&display=swap");
+
+/* Components */
+@import url("button.css");
+@import url("modal.css");
+@import url("bg.css");
+@import url("custom_modal.css");
+
+/* Pages */
+@import url("home.css");
+@import url("lobby.css");
+
+body, html {
+    font-family: 'Cormorant', serif;
+    font-size: 1.25rem;
+    color: #FFF;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Cormorant Unicase', serif;
+    font-weight: 700;
+    text-shadow: 2px 3px 5px #000;
+    text-align: center;
+}
+
+main {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-height: 100vh;
+}
+
+form {
+    background: none;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
