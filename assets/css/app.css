@@ -6,14 +6,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@400;700&family=Cormorant:ital,wght@0,400;0,500;1,400&display=swap");
 
 /* Components */
-@import url("button.css");
-@import url("modal.css");
-@import url("bg.css");
-@import url("custom_modal.css");
+@import url("./components/button.css");
+@import url("./components/modal.css");
+@import url("./components/bg.css");
+@import url("./components/custom_modal.css");
+@import url("./components/top_bar.css");
 
 /* Pages */
-@import url("home.css");
-@import url("lobby.css");
+@import url("./pages/home.css");
+@import url("./pages/lobby.css");
+@import url("./pages/game.css");
+
 
 body, html {
     font-family: 'Cormorant', serif;

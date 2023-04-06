@@ -1,0 +1,42 @@
+.game {
+    display: grid;
+    grid-template-rows: auto 3fr 7fr;
+    grid-template-columns: minmax(auto, 1200px) minmax(auto, 800px);
+    grid-gap: 1rem;
+    padding: 2rem;
+    height: 100vh;
+    margin: 0 auto;
+}
+
+.game .avalon-top-bar {
+    grid-row: 1;
+    grid-column: 2;
+    justify-self: right;
+}
+
+.game .avalon-main-card {
+    grid-row: 2;
+    grid-column: 1;
+    justify-self: right;
+    width: 100%;
+    padding: 1rem;
+    background-color: green;
+}
+
+.game .avalon-chat-box {
+    grid-row: 3;
+    grid-column: 1;
+    justify-self: right;
+    width: 100%;
+    padding: 1rem;
+    background-color: blue;
+}
+
+.game .avalon-side-bar {
+    grid-row: 2 / 4;
+    grid-column: 2;
+    justify-self: left;
+    width: 100%;
+    padding: 1rem;
+    background-color: red;
+}
