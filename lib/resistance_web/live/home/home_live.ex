@@ -3,9 +3,11 @@ defmodule ResistanceWeb.HomeLive do
   require Logger
 
   @impl true
-  def mount(_params, _session, socket) do
-    form = to_form(%{"name" => ""})
-    {:ok, assign(socket, %{form: form})}
+  def mount(_params, session, socket) do
+    init_state = socket
+      |> assign(:self, session["_csrf_token"])
+      |> assign(:form, to_form(%{"name" => ""}))
+    {:ok, init_state}
   end
 
   @impl true
@@ -19,12 +21,11 @@ defmodule ResistanceWeb.HomeLive do
   end
 
   @impl true
-  def handle_event("join", %{"name" => name} = param, socket) do
-    case Pregame.Server.add_player(socket, String.trim(name)) do
+  def handle_event("join", %{"name" => name} = param,  socket) do
+    case Pregame.Server.add_player(socket.assigns.self, String.trim(name)) do
       :lobby_full ->
         # TODO: Show Lobby Full Modal
         {:noreply, socket}
-
       {:error, msg} ->
         {:noreply, assign(socket, :form, to_form(param, errors: [name: {msg, []}]))}
       _ ->

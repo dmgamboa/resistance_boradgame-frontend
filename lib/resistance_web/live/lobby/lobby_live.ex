@@ -3,9 +3,13 @@ defmodule ResistanceWeb.LobbyLive do
   require Logger
 
   @impl true
-  def mount(_params, _session, socket) do
-    init_state = socket |> assign(:players, %{}) |> assign(:time_to_start, nil)
-    case Pregame.Server.is_player(socket) do
+  def mount(_params, session, socket) do
+    init_state = socket
+      |> assign(:self, session["_csrf_token"])
+      |> assign(:players, %{})
+      |> assign(:time_to_start, nil)
+
+    case Pregame.Server.is_player(session["_csrf_token"]) do
       false -> {:ok, init_state}
       true ->
         Pregame.Server.subscribe()
@@ -14,8 +18,8 @@ defmodule ResistanceWeb.LobbyLive do
   end
 
   @impl true
-  def handle_params(_params, _url, socket) do
-    case Pregame.Server.is_player(socket) do
+  def handle_params(_params, _url, %{assigns: %{self: self} } = socket) do
+    case Pregame.Server.is_player(self) do
       false -> {:noreply, push_navigate(socket, to: "/")}
       true -> {:noreply, socket}
     end
@@ -43,13 +47,13 @@ defmodule ResistanceWeb.LobbyLive do
   end
 
   @impl true
-  def handle_event("toggle_ready", _params, socket) do
-    Pregame.Server.toggle_ready(socket)
+  def handle_event("toggle_ready", _params,  %{assigns: %{self: self} } = socket) do
+    Pregame.Server.toggle_ready(self)
     {:noreply, socket}
   end
 
   @impl true
-  def terminate(_reason, socket) do
-    Pregame.Server.remove_player(socket)
+  def terminate(_reason, %{assigns: %{self: self} }) do
+    Pregame.Server.remove_player(self)
   end
 end
