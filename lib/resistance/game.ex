@@ -25,7 +25,7 @@ defmodule Game.Server do
   Store game state. The state is a map with the following keys:
       players: [Player], # a list of Player, order never change during the game
       quest_outcomes: [:success | :fail],     # a list of quest outcomes
-      stage: :party_assembling | :voting | :quest | :quest_reveal, # current stage of the game
+      stage: :init | :party_assembling | :voting | :quest | :quest_reveal | :end_game # current stage of the game
       team_votes: %{player_id => :approve | :reject},      # a map of player's vote for the current team
       quest_votes: %{player_id => :assist | :sabotage}      # a map of player's vote for the current quest
       team_rejection_count: int
@@ -61,6 +61,10 @@ defmodule Game.Server do
   """
   def vote_for_mission(player_id, vote) do
     GenServer.cast(__MODULE__, {:vote_for_mission, player_id, vote})
+  end
+
+  def remove_player(player_id) do
+    GenServer.cast(__MODULE__, {:remove_player, player_id})
   end
 
   ### subscribe and broadcast functions
@@ -142,6 +146,31 @@ defmodule Game.Server do
     new_state = %{state | quest_votes: updated_quest_votes}
 
     {:noreply, new_state}
+  end
+
+  @impl true
+  def handle_cast({:remove_player, player_id}, state) do
+    updated_players = Enum.filter(state.players, fn player -> player.id != player_id end)
+    updated_team_votes = Map.delete(state.team_votes, player_id)
+    updated_quest_votes = Map.delete(state.quest_votes, player_id)
+
+    new_state = %{
+      state
+      | players: updated_players,
+        team_votes: updated_team_votes,
+        quest_votes: updated_quest_votes
+    }
+
+    num_bad_guys = Enum.count(updated_players, fn player -> player.role == :bad end)
+    num_good_guys = Enum.count(updated_players, fn player -> player.role == :good end)
+
+    if num_bad_guys > num_good_guys || num_bad_guys == 0 || num_good_guys == 0 do
+      new_state = %{new_state | stage: :end_game}
+      broadcast(:update, new_state)
+      {:noreply, new_state}
+    else
+      {:noreply, new_state}
+    end
   end
 
   @impl true
@@ -253,7 +282,6 @@ defmodule Game.Server do
   # called when quest reveal stage finished
   defp clean_up(state, _) do
     Logger.log(:info, "clean_up")
-    :timer.send_after(3000, self(), {:end_stage, :init})
     quest_result = get_result(state.quest_votes)
     new_quest_outcomes = state.quest_outcomes ++ [quest_result]
 
@@ -269,6 +297,8 @@ defmodule Game.Server do
         state
 
       {:continue, _} ->
+        :timer.send_after(3000, self(), {:end_stage, :init})
+
         %{
           players: Enum.map(state.players, fn player -> %Player{player | on_quest: false} end),
           quest_outcomes: new_quest_outcomes,
