@@ -81,7 +81,7 @@ defmodule Game.Server do
       # a list of Player, order never change during the game
       players: players,
       # [:success | :fail]   #current_mission = length(mission_results) + 1
-      quest_outcome: [],
+      quest_outcomes: [],
       # :init | :party_assembling | :voting | :quest | :quest_reveal | :end_game
       stage: :init,
       # %{player_id => :approve | :reject}
@@ -246,7 +246,7 @@ defmodule Game.Server do
       _ ->
         %{
           players: Enum.map(state.players, fn player -> %Player{player | on_quest: false} end),
-          quest_outcome: state.quest_outcome,
+          quest_outcomes: state.quest_outcomes,
           stage: :init,
           team_votes: default_votes(state.players),
           quest_votes: %{},
@@ -275,7 +275,7 @@ defmodule Game.Server do
       {:continue, _} ->
         %{
           players: Enum.map(state.players, fn player -> %Player{player | on_quest: false} end),
-          quest_outcome: new_quest_outcomes,
+          quest_outcomes: new_quest_outcomes,
           stage: :init,
           team_votes: default_votes(state.players),
           quest_votes: %{},
@@ -285,9 +285,9 @@ defmodule Game.Server do
   end
 
   # check if bad guys or good guys have won
-  defp check_win_condition(quest_outcome) do
-    num_fails = Enum.count(quest_outcome, fn result -> result == :fail end)
-    num_passes = Enum.count(quest_outcome, fn result -> result == :success end)
+  defp check_win_condition(quest_outcomes) do
+    num_fails = Enum.count(quest_outcomes, fn result -> result == :fail end)
+    num_passes = Enum.count(quest_outcomes, fn result -> result == :success end)
 
     cond do
       num_fails >= 3 ->
@@ -348,7 +348,7 @@ defmodule Game.Server do
 
   # determines if the quest succeeded or failed
   defp get_result(quest_votes) do
-    if Enum.reduce(quest_votes, true, fn {_, vote}, acc -> acc && vote == :assist end) do
+    if Enum.all?(quest_votes, fn {_, vote} -> vote == :assist end) do
       :succeed
     else
       :fail
