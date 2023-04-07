@@ -222,22 +222,7 @@ defmodule Game.Server do
     new_state
   end
 
-  defp check_win_condition(quest_outcome) do
-    num_fails = Enum.count(quest_outcome, fn result -> result == :fail end)
-    num_passes = Enum.count(quest_outcome, fn result -> result == :success end)
-
-    cond do
-      num_fails >= 3 ->
-        {:end_game, :bad}
-
-      num_passes >= 3 ->
-        {:end_game, :good}
-
-      true ->
-        {:continue, nil}
-    end
-  end
-
+  # called when quest team is rejected
   defp clean_up(state, true) do
     :timer.send_after(3000, self(), {:end_stage, :init})
 
@@ -259,6 +244,7 @@ defmodule Game.Server do
     end
   end
 
+  # called when quest reveal stage finished
   defp clean_up(state, _) do
     :timer.send_after(3000, self(), {:end_stage, :init})
     quest_result = get_result(state.quest_votes)
@@ -284,6 +270,23 @@ defmodule Game.Server do
           quest_votes: %{},
           team_rejection_count: state.team_rejection_count
         }
+    end
+  end
+
+  # check if bad guys or good guys have won
+  defp check_win_condition(quest_outcome) do
+    num_fails = Enum.count(quest_outcome, fn result -> result == :fail end)
+    num_passes = Enum.count(quest_outcome, fn result -> result == :success end)
+
+    cond do
+      num_fails >= 3 ->
+        {:end_game, :bad}
+
+      num_passes >= 3 ->
+        {:end_game, :good}
+
+      true ->
+        {:continue, nil}
     end
   end
 
@@ -320,20 +323,28 @@ defmodule Game.Server do
     Phoenix.PubSub.broadcast(Resistance.PubSub, "game", {event, payload})
   end
 
+  # returns a map of default votes for team formation
   defp default_votes(players) do
     Enum.reduce(players, %{}, fn p, acc -> Map.put(acc, p.id, :approve) end)
   end
 
+  # returns a map of default votes for quest result
   defp default_quest_votes(players) do
     Enum.reduce(players, %{}, fn p, acc ->
       if p.on_quest, do: Map.put(acc, p.id, :assist), else: acc
     end)
   end
 
+  # determines if the quest succeeded or failed
   defp get_result(quest_votes) do
-    Enum.reduce(quest_votes, true, fn {id, vote}, acc -> acc && vote == :assist end)
+    if Enum.reduce(quest_votes, true, fn {id, vote}, acc -> acc && vote == :assist end) do
+      :succeed
+    else
+      :fail
+    end
   end
 
+  # check if quest team is approved
   defp check_team_approved(team_votes) do
     votes = Map.values(team_votes)
     half = (length(votes) / 2) |> Float.floor() |> round
