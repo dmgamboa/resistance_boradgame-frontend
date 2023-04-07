@@ -1,8 +1,6 @@
 defmodule ResistanceWeb.Game.SideBar do
   use Phoenix.Component
 
-  import ResistanceWeb.CoreComponents
-
   @doc """
   Creates a side bar for use in the Game LiveView
   """

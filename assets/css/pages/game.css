@@ -1,21 +1,25 @@
 .game {
-    display: grid;
-    grid-template-rows: auto 3fr 7fr;
-    grid-template-columns: minmax(auto, 1200px) minmax(auto, 800px);
-    grid-gap: 1rem;
     padding: 2rem;
     height: 100vh;
-    margin: 0 auto;
 }
 
-.game .avalon-top-bar {
-    grid-row: 1;
-    grid-column: 2;
-    justify-self: right;
+.game .content{
+    display: grid;
+    grid-template-rows: 1fr 55%;
+    grid-template-columns: minmax(auto, 1200px) minmax(auto, 600px);
+    grid-gap: 1rem;
+    margin: 0 auto;
+    height: 100%;
+    padding: 2rem 0;
+}
+
+.game .content > * {
+    padding: 1rem;
+    border-radius: 1.5rem;
 }
 
 .game .avalon-main-card {
-    grid-row: 2;
+    grid-row: 1;
     grid-column: 1;
     justify-self: right;
     width: 100%;
@@ -24,16 +28,52 @@
 }
 
 .game .avalon-chat-box {
-    grid-row: 3;
+    grid-row: 2;
     grid-column: 1;
     justify-self: right;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
     width: 100%;
-    padding: 1rem;
-    background-color: blue;
+    background: linear-gradient(
+        to bottom, rgba(40,40,52,1), rgba(40,40,52,0.3)),
+        bottom / cover url("/images/backgrounds/lobby-bg.jpg");
 }
 
+.game .avalon-chat-box .messages {
+    height: 100%;
+    padding: 0.35rem;
+    overflow: auto;
+    display: flex;
+    flex-direction: column-reverse;
+    font-size: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+}
+
+.game .avalon-chat-box .messages p.server-msg {
+    color: #FFC93B;
+}
+
+.game .avalon-chat-box form div {
+    margin: 0;
+}
+
+.game .avalon-chat-box form input {
+    background-color: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    font-weight: bold;
+}
+
+.game .avalon-chat-box form input::placeholder {
+    color: white;
+    font-weight: bold;
+}
+
+
 .game .avalon-side-bar {
-    grid-row: 2 / 4;
+    grid-row: 1 / 3;
     grid-column: 2;
     justify-self: left;
     width: 100%;

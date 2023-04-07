@@ -3,15 +3,16 @@
         <img src="images/backgrounds/menu-bg.jpg" alt="Forest">
     </div>
 
-    <.top_bar>
-    </.top_bar>
+    <.top_bar />
 
-    <.main_card>
-    </.main_card>
+    <div class="content">
+        <.main_card />
 
-    <.chat_box>
-    </.chat_box>
+        <.chat_box
+            form={@form}
+            messages={@messages}
+        />
 
-    <.side_bar>
-    </.side_bar>
+        <.side_bar />
+    </div>
 </div>
