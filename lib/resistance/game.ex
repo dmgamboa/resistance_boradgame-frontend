@@ -51,13 +51,14 @@ defmodule Game.Server do
     GenServer.call(__MODULE__, :get_king)
   end
 
-@doc """
+  @doc """
   add a player's name to the current mission team and broadcast this player's name
   """
   def add_quest_member(player_name) do
     GenServer.cast(__MODULE__, {:add_quest_member, player_name})
   end
-@doc """
+
+  @doc """
   remove a player's name from the current mission team and broadcast this player's name
   """
   def remove_quest_member(player_name) do

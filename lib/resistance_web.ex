@@ -87,6 +87,10 @@ defmodule ResistanceWeb do
       import ResistanceWeb.CoreComponents
       import ResistanceWeb.Gettext
       import ResistanceWeb.CustomModals
+      import ResistanceWeb.TopBar
+      import ResistanceWeb.Game.ChatBox
+      import ResistanceWeb.Game.MainCard
+      import ResistanceWeb.Game.SideBar
 
       # Shortcut for generating JS commands
       alias Phoenix.LiveView.JS
