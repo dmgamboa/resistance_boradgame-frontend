@@ -19,11 +19,17 @@ defmodule ResistanceWeb.Game.ChatBox do
           <% end) %>
         </div>
 
-        <.simple_form for={@form} phx-submit="message">
+        <.simple_form
+          id="message-form"
+          for={@form}
+          phx-submit="message"
+          phx-hook="FormReset"
+        >
             <.input
                 field={@form[:message]}
+                phx-reset=""
                 placeholder="Send a missive..."/>
-            <input type="submit" hidden autofocus />
+            <input id="message-submit" type="submit" hidden />
         </.simple_form>
       </div>
     """
