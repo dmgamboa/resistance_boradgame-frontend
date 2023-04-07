@@ -181,7 +181,6 @@ defmodule Game.Server do
 
   defp party_assembling_stage(state) do
     Logger.log(:info, "party_assembling_stage")
-    IO.inspect(state)
     players = assign_next_king(state.players)
     new_state = Map.put(state, :players, players)
     new_king = find_king(new_state.players).name
@@ -193,7 +192,6 @@ defmodule Game.Server do
 
   defp voting_stage(state) do
     Logger.log(:info, "voting_stage")
-    IO.inspect(state)
     # randomly select players to be on quest if not enough
     quest_votes = default_quest_votes(state.players)
     num_mem_to_add = 3 - length(Map.keys(quest_votes))
@@ -215,7 +213,6 @@ defmodule Game.Server do
 
   defp quest_stage(state) do
     Logger.log(:info, "quest_stage")
-    IO.inspect(state)
     new_state = Map.put(state, :stage, :quest)
     broadcast(:update, new_state)
     :timer.send_after(15000, self(), {:end_stage, :quest})
@@ -224,7 +221,6 @@ defmodule Game.Server do
 
   defp quest_reveal_stage(state) do
     Logger.log(:info, "quest_reveal_stage")
-    IO.inspect(state)
     new_state = Map.put(state, :stage, :quest_reveal)
     broadcast(:update, new_state)
     :timer.send_after(15000, self(), {:end_stage, :quest_reveal})
@@ -234,7 +230,6 @@ defmodule Game.Server do
   # called when quest team is rejected
   defp clean_up(state, true) do
     Logger.log(:info, "clean_up")
-    IO.inspect(state)
     :timer.send_after(3000, self(), {:end_stage, :init})
 
     case state.team_rejection_count do
@@ -257,6 +252,7 @@ defmodule Game.Server do
 
   # called when quest reveal stage finished
   defp clean_up(state, _) do
+    Logger.log(:info, "clean_up")
     :timer.send_after(3000, self(), {:end_stage, :init})
     quest_result = get_result(state.quest_votes)
     new_quest_outcomes = state.quest_outcomes ++ [quest_result]
