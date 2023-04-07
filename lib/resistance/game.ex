@@ -19,6 +19,7 @@ end
 
 defmodule Game.Server do
   use GenServer
+  require Logger
 
   @doc """
   Store game state. The state is a map with the following keys:
@@ -84,7 +85,7 @@ defmodule Game.Server do
       # :init | :party_assembling | :voting | :quest | :quest_reveal | :end_game
       stage: :init,
       # %{player_id => :approve | :reject}
-      team_votes: default_votes(state.players),
+      team_votes: default_votes(players),
       # %{player_id => :assist | :sabotage}
       quest_votes: %{},
       team_rejection_count: 0
@@ -122,7 +123,7 @@ defmodule Game.Server do
           end)
 
         new_state = %{state | players: updated_players}
-        broadcast({:update, new_state})
+        broadcast(:update, new_state)
         {:reply, :ok, new_state}
     end
   end
@@ -179,16 +180,20 @@ defmodule Game.Server do
   end
 
   defp party_assembling_stage(state) do
+    Logger.log(:info, "party_assembling_stage")
+    IO.inspect(state)
     players = assign_next_king(state.players)
     new_state = Map.put(state, :players, players)
     new_king = find_king(new_state.players).name
     broadcast(:message, {:server, "#{new_king} is now king!"})
     broadcast(:update, new_state)
-    :timer.send_after(15000, self(), {:end_stage, :party_assembling_stage})
+    :timer.send_after(15000, self(), {:end_stage, :party_assembling})
     new_state
   end
 
   defp voting_stage(state) do
+    Logger.log(:info, "voting_stage")
+    IO.inspect(state)
     # randomly select players to be on quest if not enough
     quest_votes = default_quest_votes(state.players)
     num_mem_to_add = 3 - length(Map.keys(quest_votes))
@@ -209,6 +214,8 @@ defmodule Game.Server do
   end
 
   defp quest_stage(state) do
+    Logger.log(:info, "quest_stage")
+    IO.inspect(state)
     new_state = Map.put(state, :stage, :quest)
     broadcast(:update, new_state)
     :timer.send_after(15000, self(), {:end_stage, :quest})
@@ -216,6 +223,8 @@ defmodule Game.Server do
   end
 
   defp quest_reveal_stage(state) do
+    Logger.log(:info, "quest_reveal_stage")
+    IO.inspect(state)
     new_state = Map.put(state, :stage, :quest_reveal)
     broadcast(:update, new_state)
     :timer.send_after(15000, self(), {:end_stage, :quest_reveal})
@@ -224,6 +233,8 @@ defmodule Game.Server do
 
   # called when quest team is rejected
   defp clean_up(state, true) do
+    Logger.log(:info, "clean_up")
+    IO.inspect(state)
     :timer.send_after(3000, self(), {:end_stage, :init})
 
     case state.team_rejection_count do
@@ -315,7 +326,7 @@ defmodule Game.Server do
   end
 
   defp is_team_full(players, added_player_id) do
-    Enum.count(state.players, fn player -> player.on_quest end) >= 3 &&
+    Enum.count(players, fn player -> player.on_quest end) >= 3 &&
       Enum.any?(players, fn player -> player.id == added_player_id end)
   end
 
@@ -337,7 +348,7 @@ defmodule Game.Server do
 
   # determines if the quest succeeded or failed
   defp get_result(quest_votes) do
-    if Enum.reduce(quest_votes, true, fn {id, vote}, acc -> acc && vote == :assist end) do
+    if Enum.reduce(quest_votes, true, fn {_, vote}, acc -> acc && vote == :assist end) do
       :succeed
     else
       :fail
