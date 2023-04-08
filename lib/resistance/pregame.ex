@@ -117,6 +117,7 @@ defmodule Pregame.Server do
     {:reply, valid_name(name, state), state}
   end
 
+  # start the Game.Server if all players are ready
   @impl true
   def handle_info(:start_game, state) do
     if Enum.count(state) == max_players() do

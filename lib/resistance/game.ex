@@ -27,7 +27,7 @@ defmodule Game.Server do
       quest_outcomes: [:success | :fail],     # a list of quest outcomes
       stage: :init | :party_assembling | :voting | :quest | :quest_reveal | :end_game # current stage of the game
       team_votes: %{player_id => :approve | :reject},      # a map of player's vote for the current team
-      quest_votes: %{player_id => :assist | :sabotage}      # a map of player's vote for the current quest
+      quest_votes: %{player_id => :assist | :sabotage}      # a map of team members vote for the current quest
       team_rejection_count: int
   """
 
