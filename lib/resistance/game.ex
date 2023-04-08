@@ -36,9 +36,9 @@ defmodule Game.Server do
   end
 
   @doc """
-    get one particular player struct by his/her name
+    get one particular player struct by his/her id
   """
-  
+
   def get_player_info(player_id) do
     GenServer.call(__MODULE__, {:get_player_info, player_id})
   end

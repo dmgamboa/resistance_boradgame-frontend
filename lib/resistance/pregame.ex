@@ -7,6 +7,63 @@ defmodule Pregame.Server do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
+  # Client API
+
+  @doc """
+    Adds a player to the pregame lobby and broadcasts the update.
+    Returns :ok if successful,
+    :lobby_full if the lobby is full,
+    or {:error, reason} if player's name is invalid.
+  """
+  def add_player(id, name) do
+    GenServer.call(__MODULE__, {:add_player, id, name})
+  end
+
+  @doc """
+    Returns true if the player is in the pregame lobby.
+  """
+  def is_player(id) do
+    GenServer.call(__MODULE__, {:is_player, id})
+  end
+
+  @doc """
+    Returns a map of player ids to {name, ready} tuples.
+  """
+  def get_players() do
+    GenServer.call(__MODULE__, :get_players)
+  end
+
+  @doc """
+    Removes a player from the pregame lobby and broadcasts the update.
+  """
+  def remove_player(id) do
+    GenServer.cast(__MODULE__, {:remove_player, id})
+  end
+
+  @doc """
+    provide a subscription API to the pregame lobby.
+  """
+  def subscribe() do
+    Phoenix.PubSub.subscribe(Resistance.PubSub, "pregame")
+  end
+
+  @doc """
+    Toggles a player's ready status and broadcasts the update.
+    If all players are ready, starts the game in 5 seconds.
+  """
+  def toggle_ready(id) do
+    GenServer.cast(__MODULE__, {:toggle_ready, id})
+  end
+
+  @doc """
+    Returns :ok if the name is valid,
+    or {:error, reason} if the name is invalid.
+  """
+  def validate_name(name) do
+    GenServer.call(__MODULE__, {:validate_name, name})
+  end
+
+
   @impl true
   def init(state) do
     {:ok, state}
@@ -68,35 +125,7 @@ defmodule Pregame.Server do
     {:noreply, state}
   end
 
-  # Client API
 
-  def add_player(id, name) do
-    GenServer.call(__MODULE__, {:add_player, id, name})
-  end
-
-  def is_player(id) do
-    GenServer.call(__MODULE__, {:is_player, id})
-  end
-
-  def get_players() do
-    GenServer.call(__MODULE__, :get_players)
-  end
-
-  def remove_player(id) do
-    GenServer.cast(__MODULE__, {:remove_player, id})
-  end
-
-  def subscribe() do
-    Phoenix.PubSub.subscribe(Resistance.PubSub, "pregame")
-  end
-
-  def toggle_ready(id) do
-    GenServer.cast(__MODULE__, {:toggle_ready, id})
-  end
-
-  def validate_name(name) do
-    GenServer.call(__MODULE__, {:validate_name, name})
-  end
 
   # Helper Functions
 
