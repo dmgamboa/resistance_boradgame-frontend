@@ -6,6 +6,11 @@ defmodule Pregame.Server do
     Logger.info("Starting Pregame.Server...")
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
+  # def start_link(opts \\ []) do
+  #   name = Keyword.get(opts, :name, __MODULE__)
+  #   Logger.info("Starting Pregame.Server...")
+  #   GenServer.start_link(__MODULE__, %{}, name: name)
+  # end
 
   # Client API
 

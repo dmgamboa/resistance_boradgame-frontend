@@ -1,15 +1,14 @@
-defmodule Resistance.Pregame.ServerTest do
+defmodule Pregame.ServerTest do
   use ExUnit.Case, async: false
 
   alias Pregame.Server
 
   setup do
-    case Process.whereis(Server) do
-      nil -> :ok
-      pid -> Process.unlink(pid)
-    end
-    {:ok, _pid} = Server.start_link([])
-    :ok
+    {:ok, pid} = Server.start_link([])
+    on_exit(fn ->
+      GenServer.stop(pid)
+    end)
+    {:ok, %{pid: pid}}
   end
 
   test "add_player/2 adds a player to the pregame lobby" do

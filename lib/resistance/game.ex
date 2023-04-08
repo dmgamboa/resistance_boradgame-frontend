@@ -74,6 +74,7 @@ defmodule Game.Server do
   end
 
   @impl true
+
   def init(pregame_state) do
     id_n_names =
       Enum.reduce(pregame_state, [], fn {player_id, {name, _}}, acc ->
@@ -92,6 +93,7 @@ defmodule Game.Server do
       # %{player_id => :approve | :reject}
       team_votes: default_votes(players),
       # %{player_id => :assist | :sabotage}
+      # initial stage is :approve for all players
       quest_votes: %{},
       team_rejection_count: 0
     }
@@ -209,10 +211,11 @@ defmodule Game.Server do
     end)
   end
 
+  # assemble the party with a new king
   defp party_assembling_stage(state) do
     Logger.log(:info, "party_assembling_stage")
-    players = assign_next_king(state.players)
-    new_state = Map.put(state, :players, players)
+    players = assign_next_king(state.players) # assign next king
+    new_state = Map.put(state, :players, players) # update state with new players (with new king)
     new_king = find_king(new_state.players).name
     broadcast(:message, {:server, "#{new_king} is now king!"})
     broadcast(:update, new_state)
@@ -230,12 +233,15 @@ defmodule Game.Server do
       state.players
       |> Enum.filter(fn p -> not Map.has_key?(quest_votes, p.id) end)
       |> Enum.take_random(num_mem_to_add)
-      |> Enum.map(fn p -> %Player{p | on_quest: true} end)
+      |> Enum.map(fn p -> %Player{p | on_quest: true} end) # assign 3 players to be on quest
       |> default_quest_votes()
 
     quest_votes = Map.merge(quest_votes, more_quest_votes)
 
-    new_state = state |> Map.put(:stage, :voting) |> Map.put(:quest_votes, quest_votes)
+    new_state = state
+    |> Map.put(:stage, :voting)
+    |> Map.put(:quest_votes, quest_votes) # quest_votes is a map of %{player_id => :assist} in this stage
+
     broadcast(:update, new_state)
     :timer.send_after(15000, self(), {:end_stage, :voting})
     new_state
