@@ -31,15 +31,8 @@ defmodule Game.Server do
       team_rejection_count: int
   """
 
-  def start_link(pregame_state \\ %{}) do
-    default_map = %{
-      key1: {"1", false},
-      key2: {"2", false},
-      key3: {"3", false},
-      key4: {"4", false},
-      key5: {"5", false},
-    }
-    GenServer.start_link(__MODULE__, default_map, name: __MODULE__)
+  def start_link(pregame_state) do
+    GenServer.start_link(__MODULE__, pregame_state, name: __MODULE__)
   end
 
   @doc """
@@ -222,7 +215,7 @@ defmodule Game.Server do
     new_king = find_king(new_state.players).name
     broadcast(:message, {:server, "#{new_king} is now king!"})
     broadcast(:update, new_state)
-    :timer.send_after(3000, self(), {:end_stage, :party_assembling})
+    :timer.send_after(15000, self(), {:end_stage, :party_assembling})
     new_state
   end
 
@@ -238,34 +231,28 @@ defmodule Game.Server do
       |> Enum.take_random(num_mem_to_add)
       |> Enum.map(fn p -> %Player{p | on_quest: true} end)
       |> default_quest_votes()
-    
-    IO.inspect(more_quest_votes)
 
     quest_votes = Map.merge(quest_votes, more_quest_votes)
 
     new_state = state |> Map.put(:stage, :voting) |> Map.put(:quest_votes, quest_votes)
     broadcast(:update, new_state)
-    :timer.send_after(3000, self(), {:end_stage, :voting})
-    IO.inspect(new_state.players)
+    :timer.send_after(15000, self(), {:end_stage, :voting})
     new_state
   end
 
   defp quest_stage(state) do
     Logger.log(:info, "quest_stage")
-    # IO.inspect(state.players)
     new_state = Map.put(state, :stage, :quest)
     broadcast(:update, new_state)
-    :timer.send_after(30000, self(), {:end_stage, :quest})
+    :timer.send_after(15000, self(), {:end_stage, :quest})
     new_state
   end
 
   defp quest_reveal_stage(state) do
     Logger.log(:info, "quest_reveal_stage")
-    IO.inspect(state.quest_votes)
-    IO.inspect(state.quest_outcomes)
     new_state = Map.put(state, :stage, :quest_reveal)
     broadcast(:update, new_state)
-    :timer.send_after(3000, self(), {:end_stage, :quest_reveal})
+    :timer.send_after(15000, self(), {:end_stage, :quest_reveal})
     new_state
   end
 
