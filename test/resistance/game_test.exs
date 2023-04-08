@@ -1,6 +1,6 @@
 defmodule Resistance.GameTest do
   use ExUnit.Case, async: true
-  use Phoenix.ChannelTest
+  import Phoenix.ChannelTest
 
   alias Resistance.Game.Server
 
@@ -12,3 +12,5 @@ defmodule Resistance.GameTest do
     assert player.is_king == false
     assert player.on_quest == false
   end
+
+end
