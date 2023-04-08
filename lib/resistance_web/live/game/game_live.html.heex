@@ -1,3 +1,18 @@
 <div class="game">
-    Game Screen
+    <div class="bg">
+        <img src="images/backgrounds/menu-bg.jpg" alt="Forest">
+    </div>
+
+    <.top_bar />
+
+    <div class="content">
+        <.main_card />
+
+        <.chat_box
+            form={@form}
+            messages={@messages}
+        />
+
+        <.side_bar />
+    </div>
 </div>
