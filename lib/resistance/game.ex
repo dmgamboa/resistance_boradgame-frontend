@@ -67,7 +67,7 @@ defmodule Game.Server do
   @doc """
     player broadcasts a message to all players
   """
-  def chat(player_id, message) do
+  def message(player_id, message) do
     GenServer.cast(__MODULE__, {:chat, player_id, message})
   end
 
