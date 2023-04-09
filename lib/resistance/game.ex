@@ -67,8 +67,8 @@ defmodule Game.Server do
   @doc """
     player broadcasts a message to all players
   """
-  def message(player_id, message) do
-    GenServer.cast(__MODULE__, {:chat, player_id, message})
+  def message(player_id, msg) do
+    GenServer.cast(__MODULE__, {:message, player_id, msg})
   end
 
   def remove_player(player_id) do
@@ -186,9 +186,9 @@ defmodule Game.Server do
   end
 
   @impl true
-  def handle_cast({:chat, player_id, message}, state) do
-    user = Enum.find(state.players, fn player -> player.id == player_id end)
-    broadcast(:message, {:user, "#{user}: #{message}"})
+  def handle_cast({:message, player_id, msg}, state) do
+    sender = Enum.find(state.players, fn player -> player.id == player_id end)
+    broadcast(:message, {:user, "#{sender.name}: #{msg}"})
     {:noreply, state}
   end
 
