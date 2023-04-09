@@ -64,9 +64,18 @@ defmodule Game.Server do
     GenServer.cast(__MODULE__, {:vote_for_mission, player_id, vote})
   end
 
+  @doc """
+    player broadcasts a message to all players
+  """
+  def chat(player_id, message) do
+    GenServer.cast(__MODULE__, {:chat, player_id, message})
+  end
+
   def remove_player(player_id) do
     GenServer.cast(__MODULE__, {:remove_player, player_id})
   end
+
+
 
   ### subscribe and broadcast functions
   def subscribe() do
@@ -177,6 +186,13 @@ defmodule Game.Server do
   end
 
   @impl true
+  def handle_cast({:chat, player_id, message}, state) do
+    user = Enum.find(state.players, fn player -> player.id == player_id end)
+    broadcast(:message, {:user, "#{user}: #{message}"})
+    {:noreply, state}
+  end
+
+  @impl true
   def handle_info({:end_stage, stage}, state) do
     case stage do
       :init ->
@@ -199,6 +215,8 @@ defmodule Game.Server do
         {:noreply, clean_up(state, false)}
     end
   end
+
+
 
   # return a list of players, with 1/3 of them being bad and the rest being good
   defp make_players(ids_n_names) do
