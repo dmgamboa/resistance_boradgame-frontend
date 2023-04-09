@@ -20,8 +20,5 @@
             "name": "django",
             "depth": 2
         }
-    ],
-    "githubPullRequests.ignoredPullRequestBranches": [
-        "main"
     ]
 }
