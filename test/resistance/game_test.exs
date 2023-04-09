@@ -13,4 +13,10 @@ defmodule Resistance.GameTest do
     assert player.on_quest == false
   end
 
+  test "player becomes king" do
+    player = Player.new(1, "Alice", :good)
+    player_king = Player.become_king(player)
+    assert player_king.is_king == true
+  end
+
 end

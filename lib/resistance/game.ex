@@ -27,7 +27,7 @@ defmodule Game.Server do
       quest_outcomes: [:success | :fail],     # a list of quest outcomes
       stage: :init | :party_assembling | :voting | :quest | :quest_reveal | :end_game # current stage of the game
       team_votes: %{player_id => :approve | :reject},      # a map of player's vote for the current team
-      quest_votes: %{player_id => :assist | :sabotage}      # a map of player's vote for the current quest
+      quest_votes: %{player_id => :assist | :sabotage}      # a map of team members vote for the current quest
       team_rejection_count: int
   """
 
@@ -36,9 +36,9 @@ defmodule Game.Server do
   end
 
   @doc """
-    get one particular player struct by his/her name
+    get one particular player struct by his/her id
   """
-  
+
   def get_player_info(player_id) do
     GenServer.call(__MODULE__, {:get_player_info, player_id})
   end
@@ -64,9 +64,18 @@ defmodule Game.Server do
     GenServer.cast(__MODULE__, {:vote_for_mission, player_id, vote})
   end
 
+  @doc """
+    player broadcasts a message to all players
+  """
+  def message(player_id, msg) do
+    GenServer.cast(__MODULE__, {:message, player_id, msg})
+  end
+
   def remove_player(player_id) do
     GenServer.cast(__MODULE__, {:remove_player, player_id})
   end
+
+
 
   ### subscribe and broadcast functions
   def subscribe() do
@@ -74,6 +83,7 @@ defmodule Game.Server do
   end
 
   @impl true
+
   def init(pregame_state) do
     id_n_names =
       Enum.reduce(pregame_state, [], fn {player_id, {name, _}}, acc ->
@@ -92,6 +102,7 @@ defmodule Game.Server do
       # %{player_id => :approve | :reject}
       team_votes: default_votes(players),
       # %{player_id => :assist | :sabotage}
+      # initial stage is :approve for all players
       quest_votes: %{},
       team_rejection_count: 0
     }
@@ -175,6 +186,13 @@ defmodule Game.Server do
   end
 
   @impl true
+  def handle_cast({:message, player_id, msg}, state) do
+    sender = Enum.find(state.players, fn player -> player.id == player_id end)
+    broadcast(:message, {:user, "#{sender.name}: #{msg}"})
+    {:noreply, state}
+  end
+
+  @impl true
   def handle_info({:end_stage, stage}, state) do
     case stage do
       :init ->
@@ -198,6 +216,8 @@ defmodule Game.Server do
     end
   end
 
+
+
   # return a list of players, with 1/3 of them being bad and the rest being good
   defp make_players(ids_n_names) do
     num_bad = (length(ids_n_names) / 3) |> Float.ceil() |> round
@@ -209,10 +229,11 @@ defmodule Game.Server do
     end)
   end
 
+  # assemble the party with a new king
   defp party_assembling_stage(state) do
     Logger.log(:info, "party_assembling_stage")
-    players = assign_next_king(state.players)
-    new_state = Map.put(state, :players, players)
+    players = assign_next_king(state.players) # assign next king
+    new_state = Map.put(state, :players, players) # update state with new players (with new king)
     new_king = find_king(new_state.players).name
     broadcast(:message, {:server, "#{new_king} is now king!"})
     broadcast(:update, new_state)
@@ -230,12 +251,15 @@ defmodule Game.Server do
       state.players
       |> Enum.filter(fn p -> not Map.has_key?(quest_votes, p.id) end)
       |> Enum.take_random(num_mem_to_add)
-      |> Enum.map(fn p -> %Player{p | on_quest: true} end)
+      |> Enum.map(fn p -> %Player{p | on_quest: true} end) # assign 3 players to be on quest
       |> default_quest_votes()
 
     quest_votes = Map.merge(quest_votes, more_quest_votes)
 
-    new_state = state |> Map.put(:stage, :voting) |> Map.put(:quest_votes, quest_votes)
+    new_state = state
+    |> Map.put(:stage, :voting)
+    |> Map.put(:quest_votes, quest_votes) # quest_votes is a map of %{player_id => :assist} in this stage
+
     broadcast(:update, new_state)
     :timer.send_after(15000, self(), {:end_stage, :voting})
     new_state
