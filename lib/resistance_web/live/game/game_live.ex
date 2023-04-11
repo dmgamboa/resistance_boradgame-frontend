@@ -9,6 +9,7 @@ defmodule ResistanceWeb.GameLive do
     |> assign(:self, session["_csrf_token"])
     |> assign(:form, to_form(%{"message" => ""}))
     |> assign(:messages, [])
+    |> assign(:time_left, nil)
     cond do
       GenServer.whereis(Game.Server) == nil || !Game.Server.is_player(id) ->
         {:ok, init_state}

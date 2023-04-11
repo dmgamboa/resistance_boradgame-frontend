@@ -10,31 +10,41 @@
 
             <%= if @time_left == 0 do %>
                 <.main_card_wait />
-            <% else
-                case @state.stage do
-                    :party_assembly -> <.main_card_party
-                                        players={@state.players}
-                                       />
-                    :voting -> if Enum.length(@state.team_votes)
-                                < Enum.length(@state.players - 1) {
-                                    <.main_card_vote
-                                        players={@state.players}
-                                    />
-                               } else {
-                                    <.main_card_vote_reveal
-                                        team_votes={@state.team_votes}
-                                        players={@state.players}
-                                    />
-                               }
-                    :quest -> <.main_card_quest
+            <% else %>
+                <%= case @state.stage do %>
+                    <% :party_assembly -> %>
+                        <.main_card_party
+                            players={@state.players}
+                            time_left={@time_left}
+                        />
+                    <% :voting -> %>
+                        <%= if Enum.count(@state.team_votes)
+                                < Enum.count(@state.players) - 1 do %>
+                            <.main_card_vote
                                 players={@state.players}
-                              />
-                    :quest_reveal -> <.main_card_quest_reveal
-                                        quest_outcomes={@state.quest_outcomes}
-                                     />
-                    :init -> <.main_card_wait />
-                end
-            end%>
+                                time_left={@time_left}
+                            />
+                        <% else %>
+                            <.main_card_vote_reveal
+                                team_votes={@state.team_votes}
+                                players={@state.players}
+                                time_left={@time_left}
+                            />
+                        <% end %>
+                    <% :quest -> %>
+                        <.main_card_quest
+                            players={@state.players}
+                            time_left={@time_left}
+                        />
+                    <% :quest_reveal -> %>
+                        <.main_card_quest_reveal
+                            quest_votes={@state.quest_votes}
+                            time_left={@time_left}
+                        />
+                    <% :init ->  %>
+                        <.main_card_wait />
+                <% end %>
+            <% end %>
 
             <.chat_box
                 form={@form}
@@ -57,7 +67,7 @@
         Your browser does not support the audio element.
 </audio>
 
-<%= if @state != nil && @state.stage == :end_game %>
+<%= if @state != nil && @state.stage == :end_game do %>
     <.end_game_modal
         side={if @state.winning_team == :good, do: "arthur", else: "morded"} />
-<%= end %>
+<% end %>

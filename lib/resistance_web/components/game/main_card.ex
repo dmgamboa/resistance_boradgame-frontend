@@ -46,8 +46,8 @@ defmodule ResistanceWeb.Game.MainCard do
   Creates a card for use in the Game LiveView showing the voting results
   """
   def main_card_vote_reveal(assigns) do
-    pass = Enum.count(@team_votes, fn x -> x == :approve end)
-              > Enum.count(@team_votes, fn x -> x == :reject end)
+    pass = Enum.count(@team_votes, fn {_, v} -> v == :approve end)
+              > Enum.count(@team_votes, fn {_, v} -> v == :reject end)
     party = Enum.filter(@players, fn p -> p.on_quest end)
     ~H"""
       <div class="avalon-main-card">
@@ -88,8 +88,8 @@ defmodule ResistanceWeb.Game.MainCard do
   Creates a card for use in the Game LiveView during the quest reveal stage
   """
   def main_card_quest_reveal(assigns) do
-    success = Enum.count(@quest_outcomes, fn x -> x == :fail end) == 0
-    result = Enum.map(@quest_outcomes, fn x -> if x == :fail, do: ✅, else: ❌ end)
+    success = Enum.count(@quest_votes, fn {_, v} -> v == :sabotage end) == 0
+    result = Enum.map(@quest_votes, fn {_, v} -> if v == :assist, do: "✅", else: "❌" end)
     ~H"""
       <div class="avalon-main-card">
         <h1>Quest Stage</h1>
