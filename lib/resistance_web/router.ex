@@ -20,6 +20,9 @@ defmodule ResistanceWeb.Router do
     live "/", HomeLive, :home
     live "/lobby", LobbyLive, :lobby
     live "/game", GameLive, :game
+
+    # catch-all route
+    get "/*path", PageController, :not_found
   end
 
 end
