@@ -11,6 +11,7 @@ defmodule ResistanceWeb.Game.SideBar do
   attr :self, Player, required: true
   attr :stage, :any, required: true
   attr :team_votes, :any, default: %{}
+  attr :on_select_player, :any
 
   def side_bar(assigns) do
     ~H"""
@@ -22,6 +23,7 @@ defmodule ResistanceWeb.Game.SideBar do
             self={@self}
             team_votes={@team_votes}
             stage={@stage}
+            on_select_player={@on_select_player}
           />
         </div>
     """
@@ -79,6 +81,7 @@ defmodule ResistanceWeb.Game.SideBar do
   attr :self, Player, required: true
   attr :stage, :any, required: true
   attr :team_votes, :any, required: true
+  attr :on_select_player, :any, default: "player_list_btn_click"
 
   def player_list(assigns) do
     ~H"""
@@ -111,7 +114,7 @@ defmodule ResistanceWeb.Game.SideBar do
             </span>
 
             <%= if @stage == :party_assembling && @self.is_king do %>
-              <.button>
+              <.button phx-click={@on_select_player} phx-value-player={p.id}>
                 <%= case p.on_quest do
                   true -> "Cancel"
                   false -> "Select"

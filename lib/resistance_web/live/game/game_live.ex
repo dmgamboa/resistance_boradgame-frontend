@@ -62,6 +62,22 @@ defmodule ResistanceWeb.GameLive do
   end
 
   @impl true
+  def handle_event("toggle_quest_member", %{"player" => player_id}, socket) do
+    Game.Server.toggle_quest_member(player_id, socket.assigns.self.id)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("vote_for_team", %{"vote" => vote}, socket) do
+    Game.Server.vote_for_team(socket.assigns.self.id, String.to_atom(vote))
+  end
+
+  @impl true
+  def handle_event("vote_for_quest", %{"vote" => vote}, socket) do
+    Game.Server.vote_for_mission(socket.assigns.self.id, String.to_atom(vote))
+  end
+
+  @impl true
   def handle_event("message", %{"message" => msg}, socket) do
     if (String.trim(msg) != "") do
       Game.Server.message(socket.assigns.self, msg)
