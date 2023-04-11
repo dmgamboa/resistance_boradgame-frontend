@@ -108,7 +108,7 @@ defmodule Game.Server do
       # :init | :party_assembling | :voting | :quest | :quest_reveal | :end_game
       stage: :init,
       # %{player_id => :approve | :reject}
-      team_votes: default_votes(players),
+      team_votes: %{},
       # %{player_id => :assist | :sabotage}
       # initial stage is :approve for all players
       quest_votes: %{},
@@ -244,7 +244,8 @@ defmodule Game.Server do
   defp party_assembling_stage(state) do
     Logger.log(:info, "party_assembling_stage")
     players = assign_next_king(state.players) # assign next king
-    new_state = Map.put(state, :players, players) # update state with new players (with new king)
+    new_state = Map.put(state, :players, players)
+      |> Map.put(:stage, :party_assembling_stage)
     new_king = find_king(new_state.players).name
     broadcast(:message, {:server, "#{new_king} is now king!"})
     broadcast(:update, new_state)
