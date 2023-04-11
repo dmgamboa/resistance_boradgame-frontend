@@ -193,9 +193,11 @@ defmodule Game.Server do
       num_bad_guys > num_good_guys ->
         %{new_state | stage: :end_game, winning_team: :bad}
         broadcast(:update, new_state)
+        end_game()
       num_bad_guys == 0 ->
         %{new_state | stage: :end_game, winning_team: :good}
         broadcast(:update, new_state)
+        end_game()
       true -> new_state
     end
     {:noreply, new_state}
@@ -303,8 +305,8 @@ defmodule Game.Server do
     case state.team_rejection_count do
       4 ->
         broadcast(:message, {:server, "Bad guys win!"})
-        broadcast(:update, %{state | stage: :end_game})
-        state
+        broadcast(:update, %{state | stage: :end_game, winning_team: :bad})
+        end_game()
 
       _ ->
         :timer.send_after(3000, self(), {:end_stage, :init})
@@ -331,12 +333,12 @@ defmodule Game.Server do
       {:end_game, :bad} ->
         broadcast(:message, {:server, "Bad guys win!"})
         broadcast(:update, %{state | stage: :end_game, winning_team: :bad})
-        state
+        end_game()
 
       {:end_game, :good} ->
         broadcast(:message, {:server, "Good guys win!"})
         broadcast(:update, %{state | stage: :end_game, winning_team: :good})
-        state
+        end_game()
 
       {:continue, _} ->
         :timer.send_after(3000, self(), {:end_stage, :init})
@@ -429,5 +431,10 @@ defmodule Game.Server do
     votes = Map.values(team_votes)
     half = (length(votes) / 2) |> Float.floor() |> round
     Enum.count(votes, fn v -> v == :approve end) > half
+  end
+
+  # Terminate server when game ends
+  defp end_game() do
+    GenServer.stop(__MODULE__)
   end
 end

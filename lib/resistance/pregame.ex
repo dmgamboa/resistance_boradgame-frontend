@@ -4,13 +4,9 @@ defmodule Pregame.Server do
 
   def start_link(_) do
     Logger.info("Starting Pregame.Server...")
+    Process.flag(:trap_exit, true)
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
-  # def start_link(opts \\ []) do
-  #   name = Keyword.get(opts, :name, __MODULE__)
-  #   Logger.info("Starting Pregame.Server...")
-  #   GenServer.start_link(__MODULE__, %{}, name: name)
-  # end
 
   # Client API
 
@@ -67,7 +63,6 @@ defmodule Pregame.Server do
   def validate_name(name) do
     GenServer.call(__MODULE__, {:validate_name, name})
   end
-
 
   @impl true
   def init(state) do
@@ -129,6 +124,13 @@ defmodule Pregame.Server do
       Game.Server.start_link(state)
     end
     {:noreply, state}
+  end
+
+  # reset the state when Game ends
+  @impl true
+  def handle_info({:EXIT, _from, _reason}, _) do
+    Logger.log("Resetting Pregame.Server")
+    {:noreply, %{}}
   end
 
 
