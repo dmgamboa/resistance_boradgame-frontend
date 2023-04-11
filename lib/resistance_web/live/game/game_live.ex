@@ -1,5 +1,6 @@
 defmodule ResistanceWeb.GameLive do
   use ResistanceWeb, :live_view
+  require Logger
 
   @impl true
   def mount(_params, session, socket) do
@@ -39,10 +40,25 @@ defmodule ResistanceWeb.GameLive do
 
   @impl true
   def handle_info({:update, state}, socket) do
-    IO.puts("Stage: #{inspect state.stage}")
+    Logger.log(:client, "Stage: #{inspect state.stage}")
+
+    no_timer_stages = [:init, :cleanup, :end_game]
+    if !Enum.member?(no_timer_stages, state.stage) do
+      :timer.send_interval(1000, self(), :tick)
+    end
+
     {:noreply, socket
       |> assign(:state, state)
-      |> assign(:self, get_self(socket.assigns.self.id, state.players))}
+      |> assign(:self, get_self(socket.assigns.self.id, state.players))
+      |> assign(:time_left, 15)}
+  end
+
+  @impl true
+  def handle_info(:tick, %{assigns: %{time_left: s}} = socket) do
+    case s do
+      nil -> {:noreply, socket}
+      _ -> {:noreply, socket |> assign(:time_left, s - 1)}
+    end
   end
 
   @impl true
