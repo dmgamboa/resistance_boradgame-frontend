@@ -8,20 +8,22 @@ defmodule ResistanceWeb.GameLive do
     |> assign(:self, session["_csrf_token"])
     |> assign(:form, to_form(%{"message" => ""}))
     |> assign(:messages, [])
-    case Pregame.Server.is_player(id) do
-      false -> {:ok, init_state}
+    cond do
+      GenServer.whereis(Game.Server) == nil || !Game.Server.is_player(id) ->
+        {:ok, init_state}
       true ->
         Game.Server.subscribe()
-        {:ok, init_state |> assign(:players, Game.Server.get_players())}
+        {:ok, init_state |> assign(:state, Game.Server.get_state)}
     end
-    {:ok, init_state}
   end
 
   @impl true
   def handle_params(_params, _url, %{assigns: %{self: self} } = socket) do
-    case Pregame.Server.is_player(self) do
-      false -> {:noreply, push_navigate(socket, to: "/")}
-      true -> {:noreply, socket}
+    cond do
+      GenServer.whereis(Game.Server) == nil || !Game.Server.is_player(self) ->
+        {:noreply, push_navigate(socket, to: "/")}
+      true ->
+        {:noreply, socket}
     end
   end
 
@@ -29,8 +31,13 @@ defmodule ResistanceWeb.GameLive do
   def handle_info({:message, msg}, socket) do
     {:noreply, socket
       |> assign(:form, to_form(%{"message" => ""}))
-      |> assign(:messages, [msg | socket.assigns.messages])
-    }
+      |> assign(:messages, [msg | socket.assigns.messages])}
+  end
+
+  @impl true
+  def handle_info({:update, state}, socket) do
+    IO.puts("Stage: #{inspect state.stage}")
+    {:noreply, socket |> assign(:state, state)}
   end
 
   @impl true

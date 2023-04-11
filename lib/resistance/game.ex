@@ -36,11 +36,19 @@ defmodule Game.Server do
   end
 
   @doc """
-    get one particular player struct by his/her id
+    get players in the game
   """
 
-  def get_player_info(player_id) do
-    GenServer.call(__MODULE__, {:get_player_info, player_id})
+  def get_state() do
+    GenServer.call(__MODULE__, :get_state)
+  end
+
+    @doc """
+    check if player is in the game
+  """
+
+  def is_player(id) do
+    GenServer.call(__MODULE__, {:is_player, id})
   end
 
   @doc """
@@ -112,9 +120,13 @@ defmodule Game.Server do
   end
 
   @impl true
-  def handle_call({:get_player_info, id}, _from, state) do
-    player = Enum.find(state.players, fn player -> player.id == id end)
-    {:reply, player, state}
+  def handle_call(:get_state, _from, state) do
+    {:reply, state, state}
+  end
+
+  @impl true
+  def handle_call({:is_player, id}, _from, state) do
+    {:reply, Enum.any?(state.players, fn p -> p.id == id end), state}
   end
 
   @impl true
@@ -215,7 +227,6 @@ defmodule Game.Server do
         {:noreply, clean_up(state, false)}
     end
   end
-
 
 
   # return a list of players, with 1/3 of them being bad and the rest being good
