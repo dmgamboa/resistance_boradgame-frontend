@@ -1,4 +1,6 @@
 .credits-modal.avalon-modal {
+    overflow-y: scroll;
+
     background: linear-gradient(
         to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
         /* TODO: Change this */

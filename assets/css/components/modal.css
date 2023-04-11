@@ -3,6 +3,8 @@
     max-width: 1200px;
     max-height: 800px;
     overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     background-color: #282834;
     border: 7.5px solid #FFC93B;
     border-radius: 1.5rem;
