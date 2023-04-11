@@ -5,16 +5,24 @@
 
     <.top_bar />
 
-    <div class="content">
-        <.main_card />
+    <%= if @state != nil do %>
+        <div class="content">
+            <.main_card />
 
-        <.chat_box
-            form={@form}
-            messages={@messages}
-        />
+            <.chat_box
+                form={@form}
+                messages={@messages}
+            />
 
-        <.side_bar />
-    </div>
+            <.side_bar
+                quest_outcomes={@state.quest_outcomes}
+                self={@self}
+                players={@state.players}
+                stage={@state.stage}
+                team_votes={@state.team_votes}
+            />
+        </div>
+    <% end %>
 </div>
 
 <audio src="/audio/game-music.mp3" autoplay loop preload="auto">
