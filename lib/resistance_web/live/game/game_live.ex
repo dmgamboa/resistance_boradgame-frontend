@@ -10,6 +10,7 @@ defmodule ResistanceWeb.GameLive do
     |> assign(:form, to_form(%{"message" => ""}))
     |> assign(:messages, [])
     |> assign(:time_left, nil)
+    |> assign(:timer_ref, nil)
     cond do
       GenServer.whereis(Game.Server) == nil || !Game.Server.is_player(id) ->
         {:ok, init_state}
@@ -41,23 +42,29 @@ defmodule ResistanceWeb.GameLive do
 
   @impl true
   def handle_info({:update, state}, socket) do
-    Logger.log(:client, "Stage: #{inspect state.stage}")
+    Logger.log(:info, "[client] Stage: #{inspect state.stage}")
 
     no_timer_stages = [:init, :cleanup, :end_game]
-    if !Enum.member?(no_timer_stages, state.stage) do
-      :timer.send_interval(1000, self(), :tick)
+    new_state = cond do
+      Enum.member?(no_timer_stages, state.stage) ->
+        :timer.cancel(socket.assigns.timer_ref)
+        socket |> assign(:time_left, nil) |> assign(:timer_ref, nil)
+      socket.assigns.state.stage != state.stage ->
+        :timer.cancel(socket.assigns.timer_ref)
+        {:ok, timer_ref} = :timer.send_interval(1000, self(), :tick)
+        socket |> assign(:time_left, 15) |> assign(:timer_ref, timer_ref)
+      true -> socket
     end
 
-    {:noreply, socket
+    {:noreply, new_state
       |> assign(:state, state)
-      |> assign(:self, get_self(socket.assigns.self.id, state.players))
-      |> assign(:time_left, 15)}
+      |> assign(:self, get_self(socket.assigns.self.id, state.players))}
   end
 
   @impl true
   def handle_info(:tick, %{assigns: %{time_left: s}} = socket) do
     case s do
-      nil -> {:noreply, socket}
+      s when s == nil or s == 0 -> {:noreply, socket |> assign(:time_left, nil)}
       _ -> {:noreply, socket |> assign(:time_left, s - 1)}
     end
   end
@@ -81,7 +88,7 @@ defmodule ResistanceWeb.GameLive do
   @impl true
   def handle_event("message", %{"message" => msg}, socket) do
     if (String.trim(msg) != "") do
-      Game.Server.message(socket.assigns.self, msg)
+      Game.Server.message(socket.assigns.self.id, msg)
     end
     {:noreply, socket |> assign(:form, to_form(%{"message" => ""}))}
   end

@@ -129,7 +129,7 @@ defmodule Pregame.Server do
   # reset the state when Game ends
   @impl true
   def handle_info({:EXIT, _from, _reason}, _) do
-    Logger.log("Resetting Pregame.Server")
+    Logger.log(:info, "Resetting Pregame.Server")
     {:noreply, %{}}
   end
 

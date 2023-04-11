@@ -1,16 +1,14 @@
 defmodule ResistanceWeb.Game.MainCard do
   use Phoenix.Component
-  use Phoenix.LiveComponent
 
   @doc """
   Creates a card for use in the Game LiveView during the party stage
   """
   def main_card_party(assigns) do
-    player = Enum.find(@players, fn p -> p.id == @csrf_token end)
     ~H"""
       <div class="avalon-main-card">
         <h1>Party Assembling Stage</h1>
-        <%= if player.is_king do %>
+        <%= if @self.is_king do %>
           <h3>Choose a party of 3</h3>
         <% else %>
           <h3>Waiting for the King to choose the party members..</h3>
@@ -24,11 +22,10 @@ defmodule ResistanceWeb.Game.MainCard do
   Creates a card for use in the Game LiveView during the voting stage
   """
   def main_card_vote(assigns) do
-    player = Enum.find(@players, fn p -> p.id == @csrf_token end)
     ~H"""
       <div class="avalon-main-card">
         <h1>Voting Stage</h1>
-        <%= if player.is_king do %>
+        <%= if @self.is_king do %>
           <h3>Waiting for the voting results..</h3>
         <% else %>
           <h3>Approve the party?</h3>
@@ -46,15 +43,12 @@ defmodule ResistanceWeb.Game.MainCard do
   Creates a card for use in the Game LiveView showing the voting results
   """
   def main_card_vote_reveal(assigns) do
-    pass = Enum.count(@team_votes, fn {_, v} -> v == :approve end)
-              > Enum.count(@team_votes, fn {_, v} -> v == :reject end)
-    party = Enum.filter(@players, fn p -> p.on_quest end)
     ~H"""
       <div class="avalon-main-card">
         <h1>Voting Stage</h1>
-        <%= if pass do %>
+        <%= if @pass do %>
           <h3>Vote passed! Quest is proceeding with:</h3>
-          <h3><%= join_names(party) %></h3>
+          <h3><%= join_names(@party) %></h3>
         <% else %>
           <h3>Vote failed! Next King is being selected..</h3>
         <% end %>
@@ -66,18 +60,17 @@ defmodule ResistanceWeb.Game.MainCard do
   Creates a card for use in the Game LiveView during the quest stage
   """
   def main_card_quest(assigns) do
-    player = Enum.find(@players, fn p -> p.id == @csrf_token end)
     ~H"""
       <div class="avalon-main-card">
         <h1>Quest Stage</h1>
-        <%= if player.on_quest || player.is_king do %>
-          <h3>Quest in progress..</h3>
-        <% else %>
+        <%= if @self.role == :bad && @self.on_quest do %>
           <h3>Sabotage the quest?</h3>
           <div>
             <button>✅</button>
             <button>❌</button>
           </div>
+        <% else %>
+          <h3>Quest in progress..</h3>
         <% end %>
         <h3>Time Left: <%= @time_left %>s</h3>
       </div>
@@ -88,17 +81,15 @@ defmodule ResistanceWeb.Game.MainCard do
   Creates a card for use in the Game LiveView during the quest reveal stage
   """
   def main_card_quest_reveal(assigns) do
-    success = Enum.count(@quest_votes, fn {_, v} -> v == :sabotage end) == 0
-    result = Enum.map(@quest_votes, fn {_, v} -> if v == :assist, do: "✅", else: "❌" end)
     ~H"""
       <div class="avalon-main-card">
         <h1>Quest Stage</h1>
-        <%= if success do %>
+        <%= if @success do %>
           <h3>Quest success!</h3>
         <% else %>
           <h3>Quest failed!</h3>
         <% end %>
-        <h3><%= join_results(result) %></h3>
+        <h3><%= join_results(@result) %></h3>
       </div>
     """
   end

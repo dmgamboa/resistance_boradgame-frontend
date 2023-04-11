@@ -250,7 +250,7 @@ defmodule Game.Server do
   defp party_assembling_stage(state) do
     Logger.log(:info, "party_assembling_stage")
     players = assign_next_king(state.players) # assign next king
-    new_state = %{state | stage: :party_assembling_stage, players: players}
+    new_state = %{state | stage: :party_assembling, players: players}
     new_king = find_king(new_state.players).name
     broadcast(:message, {:server, "#{new_king} is now king!"})
     broadcast(:update, new_state)

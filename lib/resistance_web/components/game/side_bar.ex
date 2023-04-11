@@ -105,6 +105,7 @@ defmodule ResistanceWeb.Game.SideBar do
                 <%= case @team_votes[p.id] do %>
                 <% :approve -> %> 👍
                 <% :reject -> %> 👎
+                <% _ -> %> 🤷
                 <% end %>
               <% end %>
 

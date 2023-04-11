@@ -12,36 +12,38 @@
                 <.main_card_wait />
             <% else %>
                 <%= case @state.stage do %>
-                    <% :party_assembly -> %>
+                    <% :party_assembling -> %>
                         <.main_card_party
-                            players={@state.players}
+                            self={@self}
                             time_left={@time_left}
                         />
                     <% :voting -> %>
                         <%= if Enum.count(@state.team_votes)
                                 < Enum.count(@state.players) - 1 do %>
                             <.main_card_vote
-                                players={@state.players}
+                                self={@self}
                                 time_left={@time_left}
                             />
                         <% else %>
                             <.main_card_vote_reveal
-                                team_votes={@state.team_votes}
-                                players={@state.players}
+                                pass={Enum.count(@state.team_votes, fn {_, v} -> v == :approve end)
+                                    > Enum.count(@state.team_votes, fn {_, v} -> v == :reject end)}
+                                party={Enum.filter(@state.players, fn p -> p.on_quest end)}
                                 time_left={@time_left}
                             />
                         <% end %>
                     <% :quest -> %>
                         <.main_card_quest
-                            players={@state.players}
+                            self={@self}
                             time_left={@time_left}
                         />
                     <% :quest_reveal -> %>
                         <.main_card_quest_reveal
-                            quest_votes={@state.quest_votes}
+                            success={Enum.count(@state.quest_votes, fn {_, v} -> v == :sabotage end) == 0}
+                            result={Enum.map(@state.quest_votes, fn {_, v} -> if v == :assist, do: "✅", else: "❌" end)}
                             time_left={@time_left}
                         />
-                    <% :init ->  %>
+                    <% _ ->  %>
                         <.main_card_wait />
                 <% end %>
             <% end %>
