@@ -13,3 +13,15 @@
         /* TODO: Change this */
         bottom / cover url("/images/backgrounds/menu-bg.jpg")
 }
+
+.end-game-modal.arthur.avalon-modal {
+    background: linear-gradient(
+        to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
+        bottom / cover url("/images/backgrounds/knights-win-bg.jpg")
+}
+
+.end-game-modal.mordred.avalon-modal {
+    background: linear-gradient(
+        to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
+        bottom / cover url("/images/backgrounds/mordred-win-bg.jpg")
+}

@@ -79,13 +79,14 @@ defmodule ResistanceWeb.CustomModals do
   Creates a modal containing credits
   """
   attr :id, :string, default: "credits_modal"
+
   def credits_modal(assigns) do
     ~H"""
     <.modal id={"#{@id}"} class="credits-modal">
         <:title>Credits</:title>
         <h2>Disclaimer</h2>
       <p>
-        "Avalon: The Resistance" is a class project and not intended for profit. This project is a 
+        "Avalon: The Resistance" is a class project and not intended for profit. This project is a
         collaborative effort to test our knowledge of functional programming as part of our coursework.
         Our primary goal is to learn, develop new skills, and gain practical experience working with
         others in a team. As such, the project is not inteded to generate revenue, but rather to provide
@@ -101,7 +102,7 @@ defmodule ResistanceWeb.CustomModals do
         together to develop innovative solutions to real-world problems. We are committed to learning
         and applying the latest programming paradigms, frameworks, and tools to deliver
         high-quality software that meets the needs of our clients and end-users. With a focus on
-        collaboration, communication, and creativity, we strive to deliver exceptional results and 
+        collaboration, communication, and creativity, we strive to deliver exceptional results and
         exceed expectations.
       </p>
 
@@ -123,6 +124,22 @@ defmodule ResistanceWeb.CustomModals do
           </a>
         </p>
     </.modal>
+    """
+  end
+
+  @doc """
+  Creates a modal containing the results of the game
+  """
+  attr :id, :string, default: "end_game_modal"
+  attr :side, :string, default: "Arthur"
+
+  def end_game_modal(assigns) do
+    ~H"""
+      <.modal id={"#{@id}"} class={"end-game-modal #{@side}"}>
+        <:title>
+          <%= String.capitalize(@side) %> wins!
+        </:title>
+      </.modal>
     """
   end
 end

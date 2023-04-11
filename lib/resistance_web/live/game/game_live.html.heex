@@ -56,3 +56,8 @@
 <audio src="/audio/game-music.mp3" autoplay loop preload="auto">
         Your browser does not support the audio element.
 </audio>
+
+<%= if @state != nil && @state.stage == :end_game %>
+    <.end_game_modal
+        side={if @state.winning_team == :good, do: "arthur", else: "morded"} />
+<%= end %>

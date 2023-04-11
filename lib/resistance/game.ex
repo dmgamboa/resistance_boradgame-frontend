@@ -112,7 +112,8 @@ defmodule Game.Server do
       # %{player_id => :assist | :sabotage}
       # initial stage is :approve for all players
       quest_votes: %{},
-      team_rejection_count: 0
+      team_rejection_count: 0,
+      winning_team: nil
     }
 
     :timer.send_after(3000, self(), {:end_stage, :init})
@@ -188,13 +189,16 @@ defmodule Game.Server do
     num_bad_guys = Enum.count(updated_players, fn player -> player.role == :bad end)
     num_good_guys = Enum.count(updated_players, fn player -> player.role == :good end)
 
-    if num_bad_guys > num_good_guys || num_bad_guys == 0 || num_good_guys == 0 do
-      new_state = %{new_state | stage: :end_game}
-      broadcast(:update, new_state)
-      {:noreply, new_state}
-    else
-      {:noreply, new_state}
+    new_state = cond do
+      num_bad_guys > num_good_guys ->
+        %{new_state | stage: :end_game, winning_team: :bad}
+        broadcast(:update, new_state)
+      num_bad_guys == 0 ->
+        %{new_state | stage: :end_game, winning_team: :good}
+        broadcast(:update, new_state)
+      true -> new_state
     end
+    {:noreply, new_state}
   end
 
   @impl true
@@ -244,8 +248,7 @@ defmodule Game.Server do
   defp party_assembling_stage(state) do
     Logger.log(:info, "party_assembling_stage")
     players = assign_next_king(state.players) # assign next king
-    new_state = Map.put(state, :players, players)
-      |> Map.put(:stage, :party_assembling_stage)
+    new_state = %{state | stage: :party_assembling_stage, players: players}
     new_king = find_king(new_state.players).name
     broadcast(:message, {:server, "#{new_king} is now king!"})
     broadcast(:update, new_state)
@@ -310,9 +313,10 @@ defmodule Game.Server do
           players: Enum.map(state.players, fn player -> %Player{player | on_quest: false} end),
           quest_outcomes: state.quest_outcomes,
           stage: :init,
-          team_votes: default_votes(state.players),
+          team_votes: state.players,
           quest_votes: %{},
-          team_rejection_count: state.team_rejection_count + 1
+          team_rejection_count: state.team_rejection_count + 1,
+          winning_team: nil,
         }
     end
   end
@@ -326,12 +330,12 @@ defmodule Game.Server do
     case check_win_condition(new_quest_outcomes) do
       {:end_game, :bad} ->
         broadcast(:message, {:server, "Bad guys win!"})
-        broadcast(:update, %{state | stage: :end_game})
+        broadcast(:update, %{state | stage: :end_game, winning_team: :bad})
         state
 
       {:end_game, :good} ->
         broadcast(:message, {:server, "Good guys win!"})
-        broadcast(:update, %{state | stage: :end_game})
+        broadcast(:update, %{state | stage: :end_game, winning_team: :good})
         state
 
       {:continue, _} ->
@@ -341,9 +345,10 @@ defmodule Game.Server do
           players: Enum.map(state.players, fn player -> %Player{player | on_quest: false} end),
           quest_outcomes: new_quest_outcomes,
           stage: :init,
-          team_votes: default_votes(state.players),
+          team_votes: %{},
           quest_votes: %{},
-          team_rejection_count: state.team_rejection_count
+          team_rejection_count: state.team_rejection_count,
+          winning_team: nil,
         }
     end
   end
@@ -423,11 +428,6 @@ defmodule Game.Server do
   defp check_team_approved(team_votes) do
     votes = Map.values(team_votes)
     half = (length(votes) / 2) |> Float.floor() |> round
-
-    if length(votes) == 5 && Enum.count(votes, fn v -> v == :approve end) > half do
-      true
-    else
-      false
-    end
+    Enum.count(votes, fn v -> v == :approve end) > half
   end
 end
