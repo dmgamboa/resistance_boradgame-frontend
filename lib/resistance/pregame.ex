@@ -151,6 +151,8 @@ defmodule Pregame.Server do
   defp valid_name(name, players) do
     cond do
       name_taken(name, players) -> {:error, "Name is already taken."}
+      !Regex.match?(~r/^[a-zA-Z0-9_]+$/, name) -> {:error, "Name can only contain letters, numbers, and underscores."}
+      !Regex.match?(~r/^.{4,12}$/, name) -> {:error, "Name must be between 4-12 characters long."}
       true -> :ok
     end
   end

@@ -3,7 +3,7 @@ defmodule ResistanceWeb.TopBar.QuitButton do
 
   def quit_button(assigns) do
     ~H"""
-      <span class="avalon-quit-button">
+      <span class="avalon-quit-button" phx-click="exit_lobby">
         Quit Button
       </span>
     """
