@@ -7,7 +7,34 @@
 
     <%= if @state != nil do %>
         <div class="content">
-            <.main_card />
+
+            <%= if @time_left == 0 do %>
+                <.main_card_wait />
+            <% else
+                case @state.stage do
+                    :party_assembly -> <.main_card_party
+                                        players={@state.players}
+                                       />
+                    :voting -> if Enum.length(@state.team_votes)
+                                < Enum.length(@state.players - 1) {
+                                    <.main_card_vote
+                                        players={@state.players}
+                                    />
+                               } else {
+                                    <.main_card_vote_reveal
+                                        team_votes={@state.team_votes}
+                                        players={@state.players}
+                                    />
+                               }
+                    :quest -> <.main_card_quest
+                                players={@state.players}
+                              />
+                    :quest_reveal -> <.main_card_quest_reveal
+                                        quest_outcomes={@state.quest_outcomes}
+                                     />
+                    :init -> <.main_card_wait />
+                end
+            end%>
 
             <.chat_box
                 form={@form}
