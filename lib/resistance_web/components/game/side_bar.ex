@@ -37,8 +37,10 @@ defmodule ResistanceWeb.Game.SideBar do
 
   def quest_outcomes(assigns) do
     ~H"""
+      <h2>Quest Outcomes</h2>
       <div class="quest-outcomes">
-        <%=Enum.map(@quest_outcomes, fn q -> %>
+        <%=Enum.map(@quest_outcomes
+          ++ List.duplicate(nil, 5 - Enum.count(@quest_outcomes)), fn q -> %>
           <div class="outcome">
             <%= if q == :success do %>
               <span>✅</span>
@@ -94,24 +96,31 @@ defmodule ResistanceWeb.Game.SideBar do
                 false -> "name"
               end}>
               <%= p.name %>
-              <%= if p.is_king do %>
-                👑
-              <% end %>
             </span>
 
-            <span class="vote">
+            <span class="icons">
 
-              <%= if @stage == :voting do %>
-                <%= case @team_votes[p.id] do %>
-                <% :approve -> %> 👍
-                <% :reject -> %> 👎
-                <% _ -> %> 🤷
+              <span class="vote">
+                <%= if @stage == :voting do %>
+                  <%= case @team_votes[p.id] do %>
+                  <% :approve -> %> 👍
+                  <% :reject -> %> 👎
+                  <% _ -> %>
+                  <% end %>
                 <% end %>
-              <% end %>
+              </span>
 
-              <%= if @stage == :quest && p.on_quest do %>
-              🏆
-              <% end %>
+              <span class="king">
+                <%= if p.is_king do %>
+                👑
+                <% end %>
+              </span>
+
+              <span class="quest">
+                <%= if @stage == :quest && p.on_quest do %>
+                🏆
+                <% end %>
+              </span>
             </span>
 
             <%= if @stage == :party_assembling && @self.is_king do %>
