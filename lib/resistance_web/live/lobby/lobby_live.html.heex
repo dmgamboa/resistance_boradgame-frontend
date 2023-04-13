@@ -57,7 +57,7 @@
 
     <.button class="ready-toggle" phx-click="toggle_ready">
         <%=
-            case Map.get(@players, @socket.id) do
+            case Map.get(@players, @self) do
                 nil -> "Ready"
                 {_n, r} ->
                     case r do

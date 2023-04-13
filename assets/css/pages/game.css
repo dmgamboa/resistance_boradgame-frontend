@@ -78,6 +78,7 @@
     justify-self: left;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     width: 100%;
     padding: 1rem;
     background-color: rgba(40,40,52,1);
@@ -86,14 +87,15 @@
     font-family: 'Cormorant Unicase';
 }
 
-.game .avalon-side-bar .quest-outcomes {
+.game .avalon-side-bar .outcome-list {
     display: flex;
     justify-content: space-evenly;
     height: 75px;
     margin-top: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-.game .avalon-side-bar .quest-outcomes .outcome {
+.game .avalon-side-bar .outcome-list .outcome {
     border: 1px solid rgba(255, 255, 255, 0.4);
     height: 50px;
     width: 50px;
@@ -106,14 +108,14 @@
     flex-direction: column;
     justify-content: center;
     max-height: 200px;
-    border-top: 1px solid rgba(255, 255, 255, 0.4);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .game .avalon-side-bar .player-list {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     font-size: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .game .avalon-side-bar .player-list .player {
@@ -121,7 +123,7 @@
     justify-content: space-between;
     align-items: center;
     height: 60px;
-    border-bottom: 0.5px solid rgba(255, 201, 59, 0.75)
+    border-bottom: 0.5px solid rgba(255, 255, 255, 0.75)
 }
 
 .game .avalon-side-bar .player-list .player:last-child {

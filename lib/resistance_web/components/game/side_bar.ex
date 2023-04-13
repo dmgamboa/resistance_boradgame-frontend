@@ -37,19 +37,21 @@ defmodule ResistanceWeb.Game.SideBar do
 
   def quest_outcomes(assigns) do
     ~H"""
-      <h2>Quest Outcomes</h2>
       <div class="quest-outcomes">
-        <%=Enum.map(@quest_outcomes
-          ++ List.duplicate(nil, 5 - Enum.count(@quest_outcomes)), fn q -> %>
-          <div class="outcome">
-            <%= if q == :success do %>
-              <span>✅</span>
-            <% end %>
-            <%= if q == :fail do %>
-              <span>❌</span>
-            <% end %>
-          </div>
-        <% end) %>
+        <h2>Quest Outcomes</h2>
+        <div class="outcome-list">
+          <%=Enum.map(@quest_outcomes
+            ++ List.duplicate(nil, 5 - Enum.count(@quest_outcomes)), fn q -> %>
+            <div class="outcome">
+              <%= if q == :success do %>
+                <span>✅</span>
+              <% end %>
+              <%= if q == :fail do %>
+                <span>❌</span>
+              <% end %>
+            </div>
+          <% end) %>
+        </div>
       </div>
     """
   end
@@ -88,49 +90,57 @@ defmodule ResistanceWeb.Game.SideBar do
   def player_list(assigns) do
     ~H"""
       <div class="player-list">
-        <%= Enum.map(@players, fn p -> %>
+        <%= Enum.map(@players
+          ++ List.duplicate(nil, 5 - Enum.count(@players)), fn p -> %>
           <div class="player">
-          <span class={
-              case @self.role == :bad && p.role == :bad do
-                true -> "name bad"
-                false -> "name"
-              end}>
-              <%= p.name %>
-            </span>
+          <%= if p != nil do %>
+            <span class={
+                case @self.role == :bad && p.role == :bad do
+                  true -> "name bad"
+                  false -> "name"
+                end}>
+                <%= p.name %>
+              </span>
 
-            <span class="icons">
+              <span class="icons">
 
-              <span class="vote">
-                <%= if @stage == :voting do %>
-                  <%= case @team_votes[p.id] do %>
-                  <% :approve -> %> 👍
-                  <% :reject -> %> 👎
-                  <% _ -> %>
+                <span class="vote">
+                  <%= if @stage == :voting do %>
+                    <%= case @team_votes[p.id] do %>
+                    <% :approve -> %> 👍
+                    <% :reject -> %> 👎
+                    <% _ -> %>
+                    <% end %>
                   <% end %>
-                <% end %>
+                </span>
+
+                <span class="king">
+                  <%= if p.is_king do %>
+                  👑
+                  <% end %>
+                </span>
+
+                <span class="quest">
+                  <%= if @stage == :quest && p.on_quest do %>
+                  🏆
+                  <% end %>
+                </span>
               </span>
 
-              <span class="king">
-                <%= if p.is_king do %>
-                👑
+              <%= if @stage == :party_assembling && @self.is_king do %>
+                <%= if p.on_quest do %>
+                  <.button phx-click={@on_select_player} phx-value-player={p.id}>
+                    Cancel
+                  </.button>
                 <% end %>
-              </span>
-
-              <span class="quest">
-                <%= if @stage == :quest && p.on_quest do %>
-                🏆
+                <%= if !p.on_quest
+                  && Enum.count(@players, fn p -> p.on_quest end) < 3 do %>
+                  <.button phx-click={@on_select_player} phx-value-player={p.id}>
+                    Select
+                  </.button>
                 <% end %>
-              </span>
-            </span>
-
-            <%= if @stage == :party_assembling && @self.is_king do %>
-              <.button phx-click={@on_select_player} phx-value-player={p.id}>
-                <%= case p.on_quest do
-                  true -> "Cancel"
-                  false -> "Select"
-                end %>
-              </.button>
-            <% end %>
+              <% end %>
+          <% end %>
           </div>
         <% end)%>
       </div>
