@@ -4,7 +4,6 @@ defmodule Pregame.Server do
 
   def start_link(_) do
     Logger.info("Starting Pregame.Server...")
-    Process.flag(:trap_exit, true)
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
@@ -66,6 +65,7 @@ defmodule Pregame.Server do
 
   @impl true
   def init(state) do
+    Process.flag(:trap_exit, true)
     {:ok, state}
   end
 
@@ -93,8 +93,12 @@ defmodule Pregame.Server do
   @impl true
   def handle_call({:add_player, id, name}, _from, state) do
     cond do
-      valid_name(name, state) != :ok -> {:reply, valid_name(name, state), state}
-      Enum.count(state) == max_players() -> {:reply, :lobby_full, state}
+      valid_name(name, state) != :ok ->
+        {:reply, valid_name(name, state), state}
+      Enum.count(state) == max_players() ->
+        {:reply, :lobby_full, state}
+      GenServer.whereis(Game.Server) != nil ->
+        {:reply, :game_in_progress, state}
       true ->
         new_state = Map.put(state, id, {name, false})
         broadcast(:update, new_state)
@@ -129,7 +133,7 @@ defmodule Pregame.Server do
   # reset the state when Game ends
   @impl true
   def handle_info({:EXIT, _from, _reason}, _) do
-    Logger.log(:info, "Resetting Pregame.Server")
+    Logger.log(:info, "Reseting Pregame.Server state")
     {:noreply, %{}}
   end
 
