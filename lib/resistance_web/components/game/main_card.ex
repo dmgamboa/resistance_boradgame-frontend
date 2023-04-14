@@ -40,23 +40,6 @@ defmodule ResistanceWeb.Game.MainCard do
   end
 
   @doc """
-  Creates a card for use in the Game LiveView showing the voting results
-  """
-  def main_card_vote_reveal(assigns) do
-    ~H"""
-      <div class="avalon-main-card">
-        <h1>Voting Stage</h1>
-        <%= if @pass do %>
-          <h3>Vote passed! Quest is proceeding with:</h3>
-          <h3><%= join_names(@party) %></h3>
-        <% else %>
-          <h3>Vote failed! Next King is being selected..</h3>
-        <% end %>
-      </div>
-    """
-  end
-
-  @doc """
   Creates a card for use in the Game LiveView during the quest stage
   """
   def main_card_quest(assigns) do
@@ -101,10 +84,6 @@ defmodule ResistanceWeb.Game.MainCard do
       </div>
     """
   end
-
-  defp join_names([]), do: ""
-  defp join_names([player]), do: player.name
-  defp join_names([player | rest]), do: "#{player.name}, #{join_names(rest)}"
 
   defp join_results([]), do: ""
   defp join_results([result]), do: result

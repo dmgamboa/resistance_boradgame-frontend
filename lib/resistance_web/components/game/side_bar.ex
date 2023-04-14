@@ -15,7 +15,7 @@ defmodule ResistanceWeb.Game.SideBar do
 
   def side_bar(assigns) do
     ~H"""
-        <div class="avalon-side-bar">
+        <div class={"avalon-side-bar #{to_string(@self.role)}"}>
           <.quest_outcomes quest_outcomes={@quest_outcomes}/>
           <.role role={@self.role} />
           <.player_list

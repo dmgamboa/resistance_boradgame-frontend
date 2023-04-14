@@ -37,8 +37,8 @@
     justify-content: flex-end;
     width: 100%;
     background: linear-gradient(
-        to bottom, rgba(40,40,52,1), rgba(40,40,52,0.3)),
-        bottom / cover url("/images/backgrounds/lobby-bg.jpg");
+        to top, rgba(40,40,52,1), rgba(40,40,52,0.3)),
+        bottom / cover url("/images/backgrounds/chat-card-bg.jpg");
 }
 
 .game .avalon-chat-box .messages {
@@ -81,10 +81,20 @@
     justify-content: space-between;
     width: 100%;
     padding: 1rem;
-    background-color: rgba(40,40,52,1);
-    border: 7.5px solid rgb(255, 201, 59);
     border-radius: 1.5rem;
     font-family: 'Cormorant Unicase';
+}
+
+.game .avalon-side-bar.good {
+    background: linear-gradient(
+        to top, rgba(40,40,52,1), rgba(40,40,52,0.3)),
+        bottom / cover url("/images/backgrounds/knight-card-bg.jpg");
+}
+
+.game .avalon-side-bar.bad {
+    background: linear-gradient(
+        to top, rgba(40,40,52,1), rgba(40,40,52,0.3)),
+        bottom / cover url("/images/backgrounds/mordred-card-bg.png");
 }
 
 .game .avalon-side-bar .outcome-list {
@@ -152,3 +162,28 @@
     height: 40px;
 }
 
+.game .avalon-main-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    background-color: rgba(40,40,52,0.4);
+    border: 3.5px double rgba(255, 201, 59, 1);
+    border-radius: 1.5rem;
+    font-family: 'Cormorant Unicase';
+}
+
+.game .avalon-main-card h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #FFC93B;
+    margin-bottom: 1rem;
+}
+
+.game .avalon-main-card h3 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #FFFFFF;
+    margin-bottom: 1rem;
+}

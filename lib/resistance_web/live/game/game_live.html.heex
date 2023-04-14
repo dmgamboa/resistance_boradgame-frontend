@@ -1,6 +1,6 @@
 <div class="game">
     <div class="bg">
-        <img src="images/backgrounds/menu-bg.jpg" alt="Forest">
+        <img src="images/backgrounds/game-bg.jpg" alt="Forest">
     </div>
 
     <.top_bar />
@@ -18,20 +18,10 @@
                             time_left={@time_left}
                         />
                     <% :voting -> %>
-                        <%= if Enum.count(@state.team_votes)
-                                < Enum.count(@state.players) - 1 do %>
-                            <.main_card_vote
-                                self={@self}
-                                time_left={@time_left}
-                            />
-                        <% else %>
-                            <.main_card_vote_reveal
-                                pass={Enum.count(@state.team_votes, fn {_, v} -> v == :approve end)
-                                    > Enum.count(@state.team_votes, fn {_, v} -> v == :reject end)}
-                                party={Enum.filter(@state.players, fn p -> p.on_quest end)}
-                                time_left={@time_left}
-                            />
-                        <% end %>
+                        <.main_card_vote
+                            self={@self}
+                            time_left={@time_left}
+                        />
                     <% :quest -> %>
                         <.main_card_quest
                             self={@self}
