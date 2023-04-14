@@ -8,7 +8,7 @@
     <%= if @state != nil do %>
         <div class="content">
 
-            <%= if @time_left == 0 do %>
+            <%= if @time_left == 0 || @time_left == nil do %>
                 <.main_card_wait />
             <% else %>
                 <%= case @state.stage do %>

@@ -83,8 +83,6 @@ defmodule Game.Server do
     GenServer.cast(__MODULE__, {:remove_player, player_id})
   end
 
-
-
   ### subscribe and broadcast functions
   def subscribe() do
     Phoenix.PubSub.subscribe(Resistance.PubSub, "game")
@@ -214,23 +212,27 @@ defmodule Game.Server do
   def handle_info({:end_stage, stage}, state) do
     case stage do
       :init ->
+        broadcast(:update, state)
         {:noreply, party_assembling_stage(state)}
 
       :party_assembling ->
-        {:noreply, voting_stage(state)}
-
+        if Enum.count(state.players, fn x -> x.on_quest end) > 3 do
+          {:noreply, voting_stage(state)}
+        else
+          {:noreply, clean_up(state)}
+        end
       :voting ->
         if check_team_approved(state.team_votes) do
           {:noreply, quest_stage(state)}
         else
-          {:noreply, clean_up(state, true)}
+          {:noreply, clean_up(state)}
         end
 
       :quest ->
         {:noreply, quest_reveal_stage(state)}
 
       :quest_reveal ->
-        {:noreply, clean_up(state, false)}
+        {:noreply, clean_up(state)}
     end
   end
 
@@ -298,8 +300,24 @@ defmodule Game.Server do
     new_state
   end
 
+  # called after king selects team
+  defp clean_up(%{stage: :party_assembling} = state) do
+    Logger.log(:info, "clean_up")
+    :timer.send_after(3000, self(), {:end_stage, :init})
+    %{
+      players: Enum.map(state.players, fn player ->
+        %Player{player | on_quest: false} end),
+      quest_outcomes: state.quest_outcomes,
+      stage: :init,
+      team_votes: state.players,
+      quest_votes: %{},
+      team_rejection_count: state.team_rejection_count + 1,
+      winning_team: nil,
+    }
+  end
+
   # called when quest team is rejected
-  defp clean_up(state, true) do
+  defp clean_up(%{stage: :voting} = state) do
     Logger.log(:info, "clean_up")
 
     case state.team_rejection_count do
@@ -324,7 +342,7 @@ defmodule Game.Server do
   end
 
   # called when quest reveal stage finished
-  defp clean_up(state, _) do
+  defp clean_up(%{stage: :quest_reveal} = state) do
     Logger.log(:info, "clean_up")
     quest_result = get_result(state.quest_votes)
     new_quest_outcomes = state.quest_outcomes ++ [quest_result]
@@ -403,11 +421,6 @@ defmodule Game.Server do
 
   defp broadcast(event, payload) do
     Phoenix.PubSub.broadcast(Resistance.PubSub, "game", {event, payload})
-  end
-
-  # returns a map of default votes for team formation
-  defp default_votes(players) do
-    Enum.reduce(players, %{}, fn p, acc -> Map.put(acc, p.id, :approve) end)
   end
 
   # returns a map of default votes for quest result
