@@ -30,11 +30,19 @@ defmodule ResistanceWeb.Game.MainCard do
           <h3>Waiting for the voting results..</h3>
         <% else %>
           <h3>Approve the party?</h3>
-          <div>
-            <.button phx-click={@on_vote} phx-value-vote={:approve}>
+          <div class="buttons">
+            <.button
+              class={if @team_votes[@self.id] == :approve, do: "selected", else: ""}
+              phx-click={@on_vote}
+              phx-value-vote={"approve"}
+            >
               Approve
             </.button>
-            <.button phx-click={@on_vote} phx-value-vote={:reject}>
+            <.button
+              class={if @team_votes[@self.id] == :reject, do: "selected", else: ""}
+              phx-click={@on_vote}
+              phx-value-vote={"reject"}
+            >
               Reject
             </.button>
           </div>
@@ -53,11 +61,19 @@ defmodule ResistanceWeb.Game.MainCard do
         <h1>Quest Stage</h1>
         <%= if @self.role == :bad && @self.on_quest do %>
           <h3>Sabotage the quest?</h3>
-          <div>
-            <.button phx-click={@on_vote} phx-value-vote={:sabotage}>
+          <div class="buttons">
+            <.button
+              class={if @quest_votes[@self.id] == :sabotage, do: "selected", else: ""}
+              phx-click={@on_vote}
+              phx-value-vote={"sabotage"}
+            >
               Sabotage
             </.button>
-            <.button phx-click={@on_vote} phx-value-vote={:assist}>
+            <.button
+              class={if @quest_votes[@self.id] == :assist, do: "selected", else: ""}
+              phx-click={@on_vote}
+              phx-value-vote={"assist"}
+            >
               Assist
             </.button>
           </div>

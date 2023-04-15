@@ -82,11 +82,13 @@ defmodule ResistanceWeb.GameLive do
   @impl true
   def handle_event("vote_for_team", %{"vote" => vote}, socket) do
     Game.Server.vote_for_team(socket.assigns.self.id, String.to_atom(vote))
+    {:noreply, socket}
   end
 
   @impl true
   def handle_event("vote_for_quest", %{"vote" => vote}, socket) do
     Game.Server.vote_for_mission(socket.assigns.self.id, String.to_atom(vote))
+    {:noreply, socket}
   end
 
   @impl true

@@ -97,6 +97,10 @@
         bottom / cover url("/images/backgrounds/mordred-card-bg.png");
 }
 
+.game .avalon-side-bar .quest-outcomes h2 {
+    font-size: 1.5rem;
+}
+
 .game .avalon-side-bar .outcome-list {
     display: flex;
     justify-content: space-evenly;
@@ -106,6 +110,9 @@
 }
 
 .game .avalon-side-bar .outcome-list .outcome {
+    display: flex;
+    justify-items: center;
+    align-items: center;
     border: 1px solid rgba(255, 255, 255, 0.4);
     height: 50px;
     width: 50px;
@@ -118,6 +125,12 @@
     flex-direction: column;
     justify-content: center;
     max-height: 200px;
+}
+
+.game .avalon-side-bar .role h1 {
+    font-size: 2rem;
+    text-align: center;
+    margin: 0;
 }
 
 .game .avalon-side-bar .player-list {
@@ -191,3 +204,16 @@
     color: #FFFFFF;
     margin-bottom: 1rem;
 }
+
+.game .avalon-main-card .buttons {
+    display: flex;
+    justify-items: space-evenly;
+}
+
+.game .avalon-main-card .avalon-btn {
+    margin: 1rem;
+}
+
+/* .game .avalon-main-card .avalon-btn.selected {
+    transform: scale(1.2);
+} */

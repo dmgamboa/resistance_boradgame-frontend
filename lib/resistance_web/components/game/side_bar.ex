@@ -65,14 +65,16 @@ defmodule ResistanceWeb.Game.SideBar do
   def role(assigns) do
     ~H"""
       <div class="role">
-        You are
-        <%= if @role == :good do %>
-          Arthur's knight
-        <% end %>
+        <h1>
+          You are
+          <%= if @role == :good do %>
+            Arthur's knight
+          <% end %>
 
-        <%= if @role == :bad do %>
-          Mordred's minion
-        <% end %>
+          <%= if @role == :bad do %>
+            Mordred's minion
+          <% end %>
+        </h1>
       </div>
     """
   end
@@ -106,7 +108,7 @@ defmodule ResistanceWeb.Game.SideBar do
 
                 <span class="vote">
                   <%= if @stage == :voting do %>
-                    <%= case Map.get(@team_votes, p.id) do %>
+                    <%= case @team_votes[p.id] do %>
                     <% :approve -> %> 👍
                     <% :reject -> %> 👎
                     <% _ -> %>
