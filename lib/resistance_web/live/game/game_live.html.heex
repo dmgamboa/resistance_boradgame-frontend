@@ -21,11 +21,13 @@
                         <.main_card_vote
                             self={@self}
                             time_left={@time_left}
+                            on_vote="vote_for_team"
                         />
                     <% :quest -> %>
                         <.main_card_quest
                             self={@self}
                             time_left={@time_left}
+                            on_vote="vote_for_quest"
                         />
                     <% :quest_reveal -> %>
                         <.main_card_quest_reveal

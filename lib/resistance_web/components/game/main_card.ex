@@ -1,5 +1,6 @@
 defmodule ResistanceWeb.Game.MainCard do
   use Phoenix.Component
+  import ResistanceWeb.CoreComponents
 
   @doc """
   Creates a card for use in the Game LiveView during the party stage
@@ -30,8 +31,12 @@ defmodule ResistanceWeb.Game.MainCard do
         <% else %>
           <h3>Approve the party?</h3>
           <div>
-            <button>✅</button>
-            <button>❌</button>
+            <.button phx-click={@on_vote} phx-value-vote={:approve}>
+              Approve
+            </.button>
+            <.button phx-click={@on_vote} phx-value-vote={:reject}>
+              Reject
+            </.button>
           </div>
         <% end %>
         <h3>Time Left: <%= @time_left %>s</h3>
@@ -49,8 +54,12 @@ defmodule ResistanceWeb.Game.MainCard do
         <%= if @self.role == :bad && @self.on_quest do %>
           <h3>Sabotage the quest?</h3>
           <div>
-            <button>✅</button>
-            <button>❌</button>
+            <.button phx-click={@on_vote} phx-value-vote={:sabotage}>
+              Sabotage
+            </.button>
+            <.button phx-click={@on_vote} phx-value-vote={:assist}>
+              Assist
+            </.button>
           </div>
         <% else %>
           <h3>Quest in progress..</h3>

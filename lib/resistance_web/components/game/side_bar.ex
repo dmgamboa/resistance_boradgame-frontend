@@ -106,7 +106,7 @@ defmodule ResistanceWeb.Game.SideBar do
 
                 <span class="vote">
                   <%= if @stage == :voting do %>
-                    <%= case @team_votes[p.id] do %>
+                    <%= case Map.get(@team_votes, p.id) do %>
                     <% :approve -> %> 👍
                     <% :reject -> %> 👎
                     <% _ -> %>
