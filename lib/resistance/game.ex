@@ -216,7 +216,7 @@ defmodule Game.Server do
         {:noreply, party_assembling_stage(state)}
 
       :party_assembling ->
-        if Enum.count(state.players, fn x -> x.on_quest end) > 3 do
+        if Enum.count(state.players, fn x -> x.on_quest end) == 3 do
           {:noreply, voting_stage(state)}
         else
           {:noreply, clean_up(state)}
@@ -416,7 +416,9 @@ defmodule Game.Server do
 
   defp is_team_full(players, added_player_id) do
     Enum.count(players, fn player -> player.on_quest end) >= 3 &&
-      Enum.any?(players, fn player -> player.id == added_player_id end)
+      Enum.any?(players, fn player ->
+        player.id == added_player_id && !player.on_quest
+      end)
   end
 
   defp broadcast(event, payload) do
