@@ -44,6 +44,10 @@ defmodule ResistanceWeb.GameLive do
   def handle_info({:update, state}, socket) do
     Logger.log(:info, "[client] Stage: #{inspect state.stage}")
 
+    if get_self(socket.assigns.self.id, state.players) == nil do
+      {:noreply, push_navigate(socket, to: "/")}
+    end
+
     no_timer_stages = [:init, :cleanup, :end_game]
     new_state = cond do
       Enum.member?(no_timer_stages, state.stage) ->
@@ -71,7 +75,7 @@ defmodule ResistanceWeb.GameLive do
 
   @impl true
   def handle_event("toggle_quest_member", %{"player" => player_id}, socket) do
-    Game.Server.toggle_quest_member(player_id, socket.assigns.self.id)
+    Game.Server.toggle_quest_member(socket.assigns.self.id, player_id)
     {:noreply, socket}
   end
 

@@ -78,16 +78,19 @@ defmodule Pregame.Server do
 
   @impl true
   def handle_cast({:toggle_ready, id}, state) do
-    {name, ready} = Map.get(state, id)
-    new_state = Map.put(state, id, {name, !ready})
-    case Enum.count(new_state) == max_players()
-      && Enum.all?(new_state, fn {_, {_, ready}} -> ready end) do
-      true ->
-        broadcast(:start_timer, new_state)
-        :timer.send_after(5000, self(), :start_game)
-      _ -> broadcast(:update, new_state)
+    case Map.get(state, id) do
+      nil -> {:noreply, state}
+      {name, ready} ->
+        new_state = Map.put(state, id, {name, !ready})
+        case Enum.count(new_state) == max_players()
+          && Enum.all?(new_state, fn {_, {_, ready}} -> ready end) do
+          true ->
+            broadcast(:start_timer, new_state)
+            :timer.send_after(5000, self(), :start_game)
+          _ -> broadcast(:update, new_state)
+        end
+        {:noreply, new_state}
     end
-    {:noreply, new_state}
   end
 
   @impl true
@@ -158,5 +161,5 @@ defmodule Pregame.Server do
     |> Enum.any?(fn {n, _} -> n == name end)
   end
 
-  def max_players(), do: 1
+  def max_players(), do: 5
 end

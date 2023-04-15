@@ -26,9 +26,13 @@ defmodule ResistanceWeb.LobbyLive do
   end
 
   @impl true
-  def handle_info({:update, players}, socket) do
-    state = socket |> assign(:players, players) |> assign(:time_to_start, nil)
-    {:noreply, state}
+  def handle_info({:update, players}, %{assigns: %{self: self}} = socket) do
+    case players[self] == nil do
+      true -> {:noreply, push_navigate(socket, to: "/")}
+      false ->
+        {:noreply, socket
+          |> assign(:players, players) |> assign(:time_to_start, nil)}
+    end
   end
 
   @impl true
