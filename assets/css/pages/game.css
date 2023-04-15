@@ -144,6 +144,10 @@
     flex: 1;
 }
 
+.game .avalon-side-bar .player-list .player .name.bad {
+    color: red;
+}
+
 .game .avalon-side-bar .player-list .player .icons > * {
     width: 2rem;
     margin: 0 0.25rem;
