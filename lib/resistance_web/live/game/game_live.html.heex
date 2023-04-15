@@ -1,22 +1,70 @@
 <div class="game">
     <div class="bg">
-        <img src="images/backgrounds/menu-bg.jpg" alt="Forest">
+        <img src="images/backgrounds/game-bg.jpg" alt="Forest">
     </div>
 
     <.top_bar />
 
-    <div class="content">
-        <.main_card />
+    <%= if @state != nil do %>
+        <div class="content">
 
-        <.chat_box
-            form={@form}
-            messages={@messages}
-        />
+            <%= if @time_left == 0 || @time_left == nil do %>
+                <.main_card_wait />
+            <% else %>
+                <%= case @state.stage do %>
+                    <% :party_assembling -> %>
+                        <.main_card_party
+                            self={@self}
+                            time_left={@time_left}
+                        />
+                    <% :voting -> %>
+                        <.main_card_vote
+                            self={@self}
+                            time_left={@time_left}
+                            team_votes={@state.team_votes}
+                            on_vote="vote_for_team"
+                        />
+                    <% :quest -> %>
+                        <.main_card_quest
+                            self={@self}
+                            time_left={@time_left}
+                            quest_votes={@state.quest_votes}
+                            on_vote="vote_for_quest"
+                        />
+                    <% :quest_reveal -> %>
+                        <.main_card_quest_reveal
+                            success={Enum.count(@state.quest_votes, fn {_, v} -> v == :sabotage end) == 0}
+                            result={Enum.map(@state.quest_votes, fn {_, v} -> if v == :assist, do: "✅", else: "❌" end)}
+                            time_left={@time_left}
+                        />
+                    <% _ ->  %>
+                        <.main_card_wait />
+                <% end %>
+            <% end %>
 
-        <.side_bar />
-    </div>
+            <.chat_box
+                form={@form}
+                messages={@messages}
+            />
+
+            <.side_bar
+                quest_outcomes={@state.quest_outcomes}
+                self={@self}
+                players={@state.players}
+                stage={@state.stage}
+                team_votes={@state.team_votes}
+                on_select_player="toggle_quest_member"
+            />
+        </div>
+    <% end %>
 </div>
 
 <audio src="/audio/game-music.mp3" autoplay loop preload="auto">
         Your browser does not support the audio element.
 </audio>
+
+<%= if @state != nil && @state.stage == :end_game do %>
+    <.end_game_modal
+        show={true}
+        side={if @state.winning_team == :good, do: "arthur", else: "morded"} />
+<% end %>

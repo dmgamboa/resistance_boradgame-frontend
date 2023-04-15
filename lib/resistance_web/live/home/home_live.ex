@@ -26,6 +26,9 @@ defmodule ResistanceWeb.HomeLive do
       :lobby_full ->
         # TODO: Show Lobby Full Modal
         {:noreply, socket}
+      :game_in_progress ->
+        # TODO: Show Game in Progress Modal
+        {:noreply, socket}
       {:error, msg} ->
         {:noreply, assign(socket, :form, to_form(param, errors: [name: {msg, []}]))}
       _ ->

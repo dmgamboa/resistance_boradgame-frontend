@@ -36,11 +36,19 @@ defmodule Game.Server do
   end
 
   @doc """
-    get one particular player struct by his/her id
+    get players in the game
   """
 
-  def get_player_info(player_id) do
-    GenServer.call(__MODULE__, {:get_player_info, player_id})
+  def get_state() do
+    GenServer.call(__MODULE__, :get_state)
+  end
+
+    @doc """
+    check if player is in the game
+  """
+
+  def is_player(id) do
+    GenServer.call(__MODULE__, {:is_player, id})
   end
 
   @doc """
@@ -75,8 +83,6 @@ defmodule Game.Server do
     GenServer.cast(__MODULE__, {:remove_player, player_id})
   end
 
-
-
   ### subscribe and broadcast functions
   def subscribe() do
     Phoenix.PubSub.subscribe(Resistance.PubSub, "game")
@@ -100,11 +106,12 @@ defmodule Game.Server do
       # :init | :party_assembling | :voting | :quest | :quest_reveal | :end_game
       stage: :init,
       # %{player_id => :approve | :reject}
-      team_votes: default_votes(players),
+      team_votes: %{},
       # %{player_id => :assist | :sabotage}
       # initial stage is :approve for all players
       quest_votes: %{},
-      team_rejection_count: 0
+      team_rejection_count: 0,
+      winning_team: nil
     }
 
     :timer.send_after(3000, self(), {:end_stage, :init})
@@ -112,9 +119,13 @@ defmodule Game.Server do
   end
 
   @impl true
-  def handle_call({:get_player_info, id}, _from, state) do
-    player = Enum.find(state.players, fn player -> player.id == id end)
-    {:reply, player, state}
+  def handle_call(:get_state, _from, state) do
+    {:reply, state, state}
+  end
+
+  @impl true
+  def handle_call({:is_player, id}, _from, state) do
+    {:reply, Enum.any?(state.players, fn p -> p.id == id end), state}
   end
 
   @impl true
@@ -148,7 +159,7 @@ defmodule Game.Server do
   def handle_cast({:vote_for_team, player_id, vote}, state) do
     updated_team_votes = Map.put(state.team_votes, player_id, vote)
     new_state = %{state | team_votes: updated_team_votes}
-
+    broadcast(:update, new_state)
     {:noreply, new_state}
   end
 
@@ -156,7 +167,7 @@ defmodule Game.Server do
   def handle_cast({:vote_for_mission, player_id, vote}, state) do
     updated_quest_votes = Map.put(state.quest_votes, player_id, vote)
     new_state = %{state | quest_votes: updated_quest_votes}
-
+    broadcast(:update, new_state)
     {:noreply, new_state}
   end
 
@@ -176,13 +187,20 @@ defmodule Game.Server do
     num_bad_guys = Enum.count(updated_players, fn player -> player.role == :bad end)
     num_good_guys = Enum.count(updated_players, fn player -> player.role == :good end)
 
-    if num_bad_guys > num_good_guys || num_bad_guys == 0 || num_good_guys == 0 do
-      new_state = %{new_state | stage: :end_game}
-      broadcast(:update, new_state)
-      {:noreply, new_state}
-    else
-      {:noreply, new_state}
+    new_state = cond do
+      num_bad_guys > num_good_guys ->
+        %{new_state | stage: :end_game, winning_team: :bad}
+        broadcast(:message, "Morded wins!")
+        broadcast(:update, new_state)
+        end_game()
+      num_bad_guys == 0 ->
+        %{new_state | stage: :end_game, winning_team: :good}
+        broadcast(:message, "Arthur wins!")
+        broadcast(:update, new_state)
+        end_game()
+      true -> new_state
     end
+    {:noreply, new_state}
   end
 
   @impl true
@@ -196,26 +214,30 @@ defmodule Game.Server do
   def handle_info({:end_stage, stage}, state) do
     case stage do
       :init ->
+        broadcast(:update, state)
         {:noreply, party_assembling_stage(state)}
 
       :party_assembling ->
-        {:noreply, voting_stage(state)}
+        if Enum.count(state.players, fn x -> x.on_quest end) == 3 do
+          {:noreply, voting_stage(state)}
+        else
+          {:noreply, clean_up(state)}
+        end
 
       :voting ->
         if check_team_approved(state.team_votes) do
           {:noreply, quest_stage(state)}
         else
-          {:noreply, clean_up(state, true)}
+          {:noreply, clean_up(state)}
         end
 
       :quest ->
         {:noreply, quest_reveal_stage(state)}
 
       :quest_reveal ->
-        {:noreply, clean_up(state, false)}
+        {:noreply, clean_up(state)}
     end
   end
-
 
 
   # return a list of players, with 1/3 of them being bad and the rest being good
@@ -233,7 +255,7 @@ defmodule Game.Server do
   defp party_assembling_stage(state) do
     Logger.log(:info, "party_assembling_stage")
     players = assign_next_king(state.players) # assign next king
-    new_state = Map.put(state, :players, players) # update state with new players (with new king)
+    new_state = %{state | stage: :party_assembling, players: players}
     new_king = find_king(new_state.players).name
     broadcast(:message, {:server, "#{new_king} is now king!"})
     broadcast(:update, new_state)
@@ -281,15 +303,31 @@ defmodule Game.Server do
     new_state
   end
 
+  # called after king selects team
+  defp clean_up(%{stage: :party_assembling} = state) do
+    Logger.log(:info, "clean_up")
+    :timer.send_after(3000, self(), {:end_stage, :init})
+    %{
+      players: Enum.map(state.players, fn player ->
+        %Player{player | on_quest: false} end),
+      quest_outcomes: state.quest_outcomes,
+      stage: :init,
+      team_votes: state.team_votes,
+      quest_votes: %{},
+      team_rejection_count: state.team_rejection_count + 1,
+      winning_team: nil,
+    }
+  end
+
   # called when quest team is rejected
-  defp clean_up(state, true) do
+  defp clean_up(%{stage: :voting} = state) do
     Logger.log(:info, "clean_up")
 
     case state.team_rejection_count do
       4 ->
         broadcast(:message, {:server, "Bad guys win!"})
-        broadcast(:update, %{state | stage: :end_game})
-        state
+        broadcast(:update, %{state | stage: :end_game, winning_team: :bad})
+        end_game()
 
       _ ->
         :timer.send_after(3000, self(), {:end_stage, :init})
@@ -298,29 +336,30 @@ defmodule Game.Server do
           players: Enum.map(state.players, fn player -> %Player{player | on_quest: false} end),
           quest_outcomes: state.quest_outcomes,
           stage: :init,
-          team_votes: default_votes(state.players),
+          team_votes: state.team_votes,
           quest_votes: %{},
-          team_rejection_count: state.team_rejection_count + 1
+          team_rejection_count: state.team_rejection_count + 1,
+          winning_team: nil,
         }
     end
   end
 
   # called when quest reveal stage finished
-  defp clean_up(state, _) do
+  defp clean_up(%{stage: :quest_reveal} = state) do
     Logger.log(:info, "clean_up")
     quest_result = get_result(state.quest_votes)
     new_quest_outcomes = state.quest_outcomes ++ [quest_result]
 
     case check_win_condition(new_quest_outcomes) do
       {:end_game, :bad} ->
-        broadcast(:message, {:server, "Bad guys win!"})
-        broadcast(:update, %{state | stage: :end_game})
-        state
+        broadcast(:message, {:server, "Mordred wins!"})
+        broadcast(:update, %{state | stage: :end_game, winning_team: :bad})
+        end_game()
 
       {:end_game, :good} ->
-        broadcast(:message, {:server, "Good guys win!"})
-        broadcast(:update, %{state | stage: :end_game})
-        state
+        broadcast(:message, {:server, "Arthur wins!"})
+        broadcast(:update, %{state | stage: :end_game, winning_team: :good})
+        end_game()
 
       {:continue, _} ->
         :timer.send_after(3000, self(), {:end_stage, :init})
@@ -329,9 +368,10 @@ defmodule Game.Server do
           players: Enum.map(state.players, fn player -> %Player{player | on_quest: false} end),
           quest_outcomes: new_quest_outcomes,
           stage: :init,
-          team_votes: default_votes(state.players),
+          team_votes: %{},
           quest_votes: %{},
-          team_rejection_count: state.team_rejection_count
+          team_rejection_count: state.team_rejection_count,
+          winning_team: nil,
         }
     end
   end
@@ -379,16 +419,13 @@ defmodule Game.Server do
 
   defp is_team_full(players, added_player_id) do
     Enum.count(players, fn player -> player.on_quest end) >= 3 &&
-      Enum.any?(players, fn player -> player.id == added_player_id end)
+      Enum.any?(players, fn player ->
+        player.id == added_player_id && !player.on_quest
+      end)
   end
 
   defp broadcast(event, payload) do
     Phoenix.PubSub.broadcast(Resistance.PubSub, "game", {event, payload})
-  end
-
-  # returns a map of default votes for team formation
-  defp default_votes(players) do
-    Enum.reduce(players, %{}, fn p, acc -> Map.put(acc, p.id, :approve) end)
   end
 
   # returns a map of default votes for quest result
@@ -411,11 +448,11 @@ defmodule Game.Server do
   defp check_team_approved(team_votes) do
     votes = Map.values(team_votes)
     half = (length(votes) / 2) |> Float.floor() |> round
+    Enum.count(votes, fn v -> v == :approve end) > half
+  end
 
-    if length(votes) == 5 && Enum.count(votes, fn v -> v == :approve end) > half do
-      true
-    else
-      false
-    end
+  # Terminate server when game ends
+  defp end_game() do
+    GenServer.stop(__MODULE__)
   end
 end

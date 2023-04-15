@@ -51,6 +51,7 @@ defmodule ResistanceWeb.CoreComponents do
     <div
       id={@id}
       phx-mounted={@show && show_modal(@id)}
+      phx-update={@show}
       phx-remove={hide_modal(@id)}
       class="relative z-50 hidden"
     >

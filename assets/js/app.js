@@ -24,7 +24,7 @@ import topbar from "../vendor/topbar"
 
 let Hooks = {
     FormReset : {
-        beforeUpdate() {
+        updated() {
             let input = this.el.querySelector('[phx-reset]')
             let value = input.getAttribute('phx-reset')
             input.value = value
