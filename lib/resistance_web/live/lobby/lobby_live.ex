@@ -8,6 +8,7 @@ defmodule ResistanceWeb.LobbyLive do
       |> assign(:self, session["_csrf_token"])
       |> assign(:players, %{})
       |> assign(:time_to_start, nil)
+      |> assign(:timer_ref, nil)
 
     case Pregame.Server.is_player(session["_csrf_token"]) do
       false -> {:ok, init_state}
@@ -30,15 +31,21 @@ defmodule ResistanceWeb.LobbyLive do
     case players[self] == nil do
       true -> {:noreply, push_navigate(socket, to: "/")}
       false ->
+        :timer.cancel(socket.assigns.timer_ref)
         {:noreply, socket
-          |> assign(:players, players) |> assign(:time_to_start, nil)}
+          |> assign(:players, players)
+          |> assign(:time_to_start, nil)
+          |> assign(:timer_ref, nil)}
     end
   end
 
   @impl true
   def handle_info({:start_timer, players}, socket) do
-    :timer.send_interval(1000, self(), :tick)
-    {:noreply, socket |> assign(:players, players) |> assign(:time_to_start, 5)}
+    {:ok, timer_ref} = :timer.send_interval(1000, self(), :tick)
+    {:noreply, socket
+      |> assign(:players, players)
+      |> assign(:time_to_start, 5)
+      |> assign(:timer_ref, timer_ref)}
   end
 
   @impl true
