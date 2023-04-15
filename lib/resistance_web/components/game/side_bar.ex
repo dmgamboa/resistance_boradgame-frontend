@@ -43,7 +43,7 @@ defmodule ResistanceWeb.Game.SideBar do
           <%=Enum.map(@quest_outcomes
             ++ List.duplicate(nil, 5 - Enum.count(@quest_outcomes)), fn q -> %>
             <div class="outcome">
-              <%= if q == :success do %>
+              <%= if q == :succeed do %>
                 <span>✅</span>
               <% end %>
               <%= if q == :fail do %>
@@ -66,7 +66,7 @@ defmodule ResistanceWeb.Game.SideBar do
     ~H"""
       <div class="role">
         <h1>
-          You are
+          You are <br />
           <%= if @role == :good do %>
             Arthur's knight
           <% end %>

@@ -132,10 +132,11 @@ defmodule ResistanceWeb.CustomModals do
   """
   attr :id, :string, default: "end_game_modal"
   attr :side, :string, default: "Arthur"
+  attr :show, :boolean, default: false
 
   def end_game_modal(assigns) do
     ~H"""
-      <.modal id={"#{@id}"} class={"end-game-modal #{@side}"}>
+      <.modal id={"#{@id}"} class={"end-game-modal #{@side}"} show={@show}>
         <:title>
           <%= String.capitalize(@side) %> wins!
         </:title>

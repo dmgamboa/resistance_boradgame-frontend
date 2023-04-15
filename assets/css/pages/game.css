@@ -1,6 +1,5 @@
 .game {
     padding: 2rem;
-    height: 100vh;
 }
 
 .game .content{
@@ -45,6 +44,8 @@
     height: 100%;
     padding: 0.35rem;
     overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     display: flex;
     flex-direction: column-reverse;
     font-size: 1rem;
@@ -80,6 +81,7 @@
     flex-direction: column;
     justify-content: space-between;
     width: 100%;
+    min-height: 750px;
     padding: 1rem;
     border-radius: 1.5rem;
     font-family: 'Cormorant Unicase';
@@ -97,6 +99,11 @@
         bottom / cover url("/images/backgrounds/mordred-card-bg.png");
 }
 
+.game .avalon-side-bar .quest-outcomes {
+    border: 2px solid rgba(255, 201, 59, 1);
+    border-radius: 1rem;
+}
+
 .game .avalon-side-bar .quest-outcomes h2 {
     font-size: 1.5rem;
 }
@@ -106,17 +113,21 @@
     justify-content: space-evenly;
     height: 75px;
     margin-top: 0.5rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .game .avalon-side-bar .outcome-list .outcome {
     display: flex;
-    justify-items: center;
+    justify-content: center;
     align-items: center;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 201, 59, 1);
+    background-color:rgba(40, 40, 52, 0.5);
+    filter: drop-shadow(0.05rem 0.25rem 0.15rem #000);
     height: 50px;
     width: 50px;
     border-radius: 0.5rem;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
 }
 
 .game .avalon-side-bar .role {
@@ -138,7 +149,7 @@
     flex-direction: column;
     justify-content: space-between;
     font-size: 1.25rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.4);
+    border-top: 1px solid rgba(255, 255, 255, 0.75);
 }
 
 .game .avalon-side-bar .player-list .player {
@@ -161,7 +172,13 @@
     color: red;
 }
 
+.game .avalon-side-bar .player-list .player .icons{
+    display: flex;
+    justify-content: space-between;
+}
+
 .game .avalon-side-bar .player-list .player .icons > * {
+    display: block;
     width: 2rem;
     margin: 0 0.25rem;
     text-align: center;

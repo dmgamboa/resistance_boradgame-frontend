@@ -159,7 +159,7 @@ defmodule Game.Server do
   def handle_cast({:vote_for_team, player_id, vote}, state) do
     updated_team_votes = Map.put(state.team_votes, player_id, vote)
     new_state = %{state | team_votes: updated_team_votes}
-
+    broadcast(:update, new_state)
     {:noreply, new_state}
   end
 
@@ -167,7 +167,7 @@ defmodule Game.Server do
   def handle_cast({:vote_for_mission, player_id, vote}, state) do
     updated_quest_votes = Map.put(state.quest_votes, player_id, vote)
     new_state = %{state | quest_votes: updated_quest_votes}
-
+    broadcast(:update, new_state)
     {:noreply, new_state}
   end
 
@@ -190,10 +190,12 @@ defmodule Game.Server do
     new_state = cond do
       num_bad_guys > num_good_guys ->
         %{new_state | stage: :end_game, winning_team: :bad}
+        broadcast(:message, "Morded wins!")
         broadcast(:update, new_state)
         end_game()
       num_bad_guys == 0 ->
         %{new_state | stage: :end_game, winning_team: :good}
+        broadcast(:message, "Arthur wins!")
         broadcast(:update, new_state)
         end_game()
       true -> new_state
@@ -221,6 +223,7 @@ defmodule Game.Server do
         else
           {:noreply, clean_up(state)}
         end
+
       :voting ->
         if check_team_approved(state.team_votes) do
           {:noreply, quest_stage(state)}
@@ -349,12 +352,12 @@ defmodule Game.Server do
 
     case check_win_condition(new_quest_outcomes) do
       {:end_game, :bad} ->
-        broadcast(:message, {:server, "Bad guys win!"})
+        broadcast(:message, {:server, "Mordred wins!"})
         broadcast(:update, %{state | stage: :end_game, winning_team: :bad})
         end_game()
 
       {:end_game, :good} ->
-        broadcast(:message, {:server, "Good guys win!"})
+        broadcast(:message, {:server, "Arthur wins!"})
         broadcast(:update, %{state | stage: :end_game, winning_team: :good})
         end_game()
 

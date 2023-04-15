@@ -14,14 +14,23 @@
         bottom / cover url("/images/backgrounds/menu-bg.jpg")
 }
 
+.end-game-modal.avalon-modal header {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .end-game-modal.arthur.avalon-modal {
+    height: 400px;
     background: linear-gradient(
         to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
-        bottom / cover url("/images/backgrounds/knights-win-bg.jpg")
+        bottom / cover url("/images/backgrounds/knights-win-modal.png")
 }
 
 .end-game-modal.mordred.avalon-modal {
+    height: 400px;
     background: linear-gradient(
         to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
-        bottom / cover url("/images/backgrounds/mordred-win-bg.jpg")
+        bottom / cover url("/images/backgrounds/mordred-win-modal.jpg")
 }

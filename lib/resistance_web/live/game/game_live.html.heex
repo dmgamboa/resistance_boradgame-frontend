@@ -65,5 +65,6 @@
 
 <%= if @state != nil && @state.stage == :end_game do %>
     <.end_game_modal
+        show={true}
         side={if @state.winning_team == :good, do: "arthur", else: "morded"} />
 <% end %>
