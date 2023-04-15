@@ -6,11 +6,6 @@ defmodule Pregame.Server do
     Logger.info("Starting Pregame.Server...")
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
-  # def start_link(opts \\ []) do
-  #   name = Keyword.get(opts, :name, __MODULE__)
-  #   Logger.info("Starting Pregame.Server...")
-  #   GenServer.start_link(__MODULE__, %{}, name: name)
-  # end
 
   # Client API
 
@@ -68,9 +63,9 @@ defmodule Pregame.Server do
     GenServer.call(__MODULE__, {:validate_name, name})
   end
 
-
   @impl true
   def init(state) do
+    Process.flag(:trap_exit, true)
     {:ok, state}
   end
 
@@ -83,23 +78,30 @@ defmodule Pregame.Server do
 
   @impl true
   def handle_cast({:toggle_ready, id}, state) do
-    {name, ready} = Map.get(state, id)
-    new_state = Map.put(state, id, {name, !ready})
-    case Enum.count(new_state) == max_players()
-      && Enum.all?(new_state, fn {_, {_, ready}} -> ready end) do
-      true ->
-        broadcast(:start_timer, new_state)
-        :timer.send_after(5000, self(), :start_game)
-      _ -> broadcast(:update, new_state)
+    case Map.get(state, id) do
+      nil -> {:noreply, state}
+      {name, ready} ->
+        new_state = Map.put(state, id, {name, !ready})
+        case Enum.count(new_state) == max_players()
+          && Enum.all?(new_state, fn {_, {_, ready}} -> ready end) do
+          true ->
+            broadcast(:start_timer, new_state)
+            :timer.send_after(5000, self(), :start_game)
+          _ -> broadcast(:update, new_state)
+        end
+        {:noreply, new_state}
     end
-    {:noreply, new_state}
   end
 
   @impl true
   def handle_call({:add_player, id, name}, _from, state) do
     cond do
-      valid_name(name, state) != :ok -> {:reply, valid_name(name, state), state}
-      Enum.count(state) == max_players() -> {:reply, :lobby_full, state}
+      valid_name(name, state) != :ok ->
+        {:reply, valid_name(name, state), state}
+      Enum.count(state) == max_players() ->
+        {:reply, :lobby_full, state}
+      GenServer.whereis(Game.Server) != nil ->
+        {:reply, :game_in_progress, state}
       true ->
         new_state = Map.put(state, id, {name, false})
         broadcast(:update, new_state)
@@ -131,6 +133,13 @@ defmodule Pregame.Server do
     {:noreply, state}
   end
 
+  # reset the state when Game ends
+  @impl true
+  def handle_info({:EXIT, _from, _reason}, _) do
+    Logger.log(:info, "Reseting Pregame.Server state")
+    {:noreply, %{}}
+  end
+
 
 
   # Helper Functions
@@ -152,5 +161,5 @@ defmodule Pregame.Server do
     |> Enum.any?(fn {n, _} -> n == name end)
   end
 
-  def max_players(), do: 1
+  def max_players(), do: 5
 end
