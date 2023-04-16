@@ -232,7 +232,13 @@ defmodule Game.Server do
         end
 
       :quest ->
-        {:noreply, quest_reveal_stage(state)}
+        default_votes = state.players
+          |> Enum.filter(fn p -> p.on_quest && state.quest_votes[p.id] == nil end)
+          |> Enum.map(fn p -> {p.id, :assist} end)
+          |> Map.new()
+        updated_quest_votes = Map.merge(state.quest_votes, default_votes)
+        new_state = %{state | quest_votes: updated_quest_votes}
+        {:noreply, quest_reveal_stage(new_state)}
 
       :quest_reveal ->
         {:noreply, clean_up(state)}
@@ -265,23 +271,8 @@ defmodule Game.Server do
 
   defp voting_stage(state) do
     Logger.log(:info, "voting_stage")
-    # randomly select players to be on quest if not enough
-    quest_votes = default_quest_votes(state.players)
-    num_mem_to_add = 3 - length(Map.keys(quest_votes))
-
-    more_quest_votes =
-      state.players
-      |> Enum.filter(fn p -> not Map.has_key?(quest_votes, p.id) end)
-      |> Enum.take_random(num_mem_to_add)
-      |> Enum.map(fn p -> %Player{p | on_quest: true} end) # assign 3 players to be on quest
-      |> default_quest_votes()
-
-    quest_votes = Map.merge(quest_votes, more_quest_votes)
-
     new_state = state
     |> Map.put(:stage, :voting)
-    |> Map.put(:quest_votes, quest_votes) # quest_votes is a map of %{player_id => :assist} in this stage
-
     broadcast(:update, new_state)
     :timer.send_after(15000, self(), {:end_stage, :voting})
     new_state
@@ -426,13 +417,6 @@ defmodule Game.Server do
 
   defp broadcast(event, payload) do
     Phoenix.PubSub.broadcast(Resistance.PubSub, "game", {event, payload})
-  end
-
-  # returns a map of default votes for quest result
-  defp default_quest_votes(players) do
-    Enum.reduce(players, %{}, fn p, acc ->
-      if p.on_quest, do: Map.put(acc, p.id, :assist), else: acc
-    end)
   end
 
   # determines if the quest succeeded or failed
