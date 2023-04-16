@@ -9,20 +9,19 @@ defmodule ResistanceWeb.LobbyLive do
       |> assign(:players, %{})
       |> assign(:time_to_start, nil)
       |> assign(:timer_ref, nil)
-
-    case Pregame.Server.is_player(session["_csrf_token"]) do
-      false -> {:ok, init_state}
-      true ->
-        Pregame.Server.subscribe()
-        {:ok, init_state |> assign(:players, Pregame.Server.get_players)}
-    end
+    {:ok, init_state}
   end
 
   @impl true
   def handle_params(_params, _url, %{assigns: %{self: self} } = socket) do
-    case Pregame.Server.is_player(self) do
-      false -> {:noreply, push_navigate(socket, to: "/")}
-      true -> {:noreply, socket}
+    cond do
+      GenServer.whereis(Game.Server) != nil && Game.Server.is_player(self) ->
+        {:noreply, push_navigate(socket , to: "/game")}
+      !Pregame.Server.is_player(self) ->
+        {:noreply, push_navigate(socket, to: "/")}
+      true ->
+        Pregame.Server.subscribe()
+        {:noreply, socket |> assign(:players, Pregame.Server.get_players)}
     end
   end
 
