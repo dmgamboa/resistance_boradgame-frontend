@@ -1,17 +1,27 @@
+.credits-modal.avalon-modal,
+.help-modal.avalon-modal {
+    display: flex;
+    flex-direction: column;
+}
+
 .credits-modal.avalon-modal {
     overflow-y: scroll;
 
-    background: linear-gradient(
-        to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
-        /* TODO: Change this */
-        bottom / cover url("/images/backgrounds/menu-bg.jpg");
+    background: linear-gradient(to bottom, rgba(40, 40, 52, 1), rgba(40, 40, 52, 0)),
+        bottom / cover url("/images/backgrounds/custom-modal-bg.jpg");
+}
+
+.credits-modal h2 {
+    margin-top: 5%;
 }
 
 .help-modal.avalon-modal {
-    background: linear-gradient(
-        to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
-        /* TODO: Change this */
-        bottom / cover url("/images/backgrounds/menu-bg.jpg")
+    background: linear-gradient(to bottom, rgba(40, 40, 52, 1), rgba(40, 40, 52, 0)),
+        bottom / cover url("/images/backgrounds/custom-modal-bg.jpg");
+}
+
+.help-modal h2 {
+    margin-top: 5%;
 }
 
 .rounds {
@@ -53,14 +63,12 @@
 
 .end-game-modal.arthur.avalon-modal {
     height: 400px;
-    background: linear-gradient(
-        to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
+    background: linear-gradient(to bottom, rgba(40, 40, 52, 1), rgba(40, 40, 52, 0)),
         bottom / cover url("/images/backgrounds/knights-win-modal.png")
 }
 
 .end-game-modal.mordred.avalon-modal {
     height: 400px;
-    background: linear-gradient(
-        to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
+    background: linear-gradient(to bottom, rgba(40, 40, 52, 1), rgba(40, 40, 52, 0)),
         bottom / cover url("/images/backgrounds/mordred-win-modal.jpg")
 }

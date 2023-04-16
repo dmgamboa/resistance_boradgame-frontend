@@ -6,13 +6,13 @@ defmodule ResistanceWeb.CustomModals do
   @doc """
   Creates a modal containing instructions for playing the game
   """
-  attr :id, :string, default: "help_modal"
+  attr(:id, :string, default: "help_modal")
 
   def help_modal(assigns) do
     ~H"""
     <.modal id={"#{@id}"} class="help-modal">
       <:title>How to Play</:title>
-      <h2>Starting the Adventure</h2>
+      <h2 id="help-top">Starting the Adventure</h2>
       <p>
         Click the "Play" button and enter your name to join the Round Table and begin the adventure!
         Once 4 other players join the adventure, the game begins. Each player is randomly and secretly
@@ -21,6 +21,7 @@ defmodule ResistanceWeb.CustomModals do
         affiliation of the other players. One player is randomly selected to be the Leader of the
         adventure, and the Rounds begins!
       </p>
+
       <h2>Rounds</h2>
       <p>
         Each round consists of two phases, a Team Building Phase and the Mission Phase. During the
@@ -33,8 +34,8 @@ defmodule ResistanceWeb.CustomModals do
       </p>
       <table class="rounds">
         <tr>
-          <th>Round Number</th>
-          <th>Number of Team Members</th>
+          <th>Round <br> Number</th>
+          <th>Number of <br> Team Members</th>
         </tr>
         <tr>
           <td>1</td>
@@ -57,7 +58,6 @@ defmodule ResistanceWeb.CustomModals do
           <td>3</td>
         </tr>
       </table>
-
       <p>
           During the Mission, all Mission Team members secretly pick to contribute to the teams
           success, or to sabotage the mission! If there is at least one sabotage, the mission
@@ -71,6 +71,8 @@ defmodule ResistanceWeb.CustomModals do
         rounds, the good guys claim the day! If the Spies get three rounds, they have successfully
         derailed the adventure, and the mission is a complete failure!
       </p>
+
+      <h2><a href="#help-top">Back to Top</a></h2>
     </.modal>
     """
   end
@@ -78,13 +80,13 @@ defmodule ResistanceWeb.CustomModals do
   @doc """
   Creates a modal containing credits
   """
-  attr :id, :string, default: "credits_modal"
+  attr(:id, :string, default: "credits_modal")
 
   def credits_modal(assigns) do
     ~H"""
     <.modal id={"#{@id}"} class="credits-modal">
         <:title>Credits</:title>
-        <h2>Disclaimer</h2>
+        <h2 id="credits-top">Disclaimer</h2>
       <p>
         "Avalon: The Resistance" is a class project and not intended for profit. This project is a
         collaborative effort to test our knowledge of functional programming as part of our coursework.
@@ -123,9 +125,14 @@ defmodule ResistanceWeb.CustomModals do
         </p>
         <p class="link_label">Modal: <a href="https://www.artstation.com/artwork/DxPgKG" 
              target="_blank" class="link">
-          https://www.artstation.com/artwork/DxPgKG
+        </p>
+        <p class="link_label">Help and Credits Modal Background: <a href="https://www.pxfuel.com/en/desktop-wallpaper-xktjo"
+          target="_blank" class="link">
+          https://www.pxfuel.com/en/desktop-wallpaper-xktjo
           </a>
         </p>
+
+       <h2><a href="#credits-top">Back to Top</a></h2>
     </.modal>
     """
   end
@@ -133,9 +140,9 @@ defmodule ResistanceWeb.CustomModals do
   @doc """
   Creates a modal containing the results of the game
   """
-  attr :id, :string, default: "end_game_modal"
-  attr :side, :string, default: "Arthur"
-  attr :show, :boolean, default: false
+  attr(:id, :string, default: "end_game_modal")
+  attr(:side, :string, default: "Arthur")
+  attr(:show, :boolean, default: false)
 
   def end_game_modal(assigns) do
     ~H"""

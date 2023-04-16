@@ -14,7 +14,7 @@ defmodule ResistanceWeb.TopBar do
         <div class="avalon-top-bar">
           <.sound_toggle />
 
-          <.quit_button />
+          <Heroicons.arrow_right_on_rectangle class="w-5 h-5 cursor-pointer" />
         </div>
     """
   end
