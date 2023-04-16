@@ -14,6 +14,36 @@
         bottom / cover url("/images/backgrounds/menu-bg.jpg")
 }
 
+.rounds {
+	border-collapse: collapse;
+	margin: 0px auto;
+    width: 40%;
+}
+
+.rounds tr, .rounds td {
+	border: 3px solid black;
+	padding: 8px;
+	text-align: center;
+	background-color: #f2f2f2;
+	color: #444;
+    font-weight: bold;
+}
+
+.rounds th {
+	background-color: #f2f2f2;
+	color: #444;
+	border: 3px solid black;
+    padding: 8px;
+}
+
+.link {
+    color: #fff338;
+}
+
+.link_label, .assets {
+    margin-left: 25%;
+}
+
 .end-game-modal.avalon-modal header {
     position: absolute;
     top: 50%;
@@ -21,17 +51,15 @@
     transform: translate(-50%, -50%);
 }
 
-.end-game-modal.avalon-modal {
-    height: 400px;
-}
-
 .end-game-modal.arthur.avalon-modal {
+    height: 400px;
     background: linear-gradient(
         to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
         bottom / cover url("/images/backgrounds/knights-win-modal.png")
 }
 
 .end-game-modal.mordred.avalon-modal {
+    height: 400px;
     background: linear-gradient(
         to bottom, rgba(40,40,52,1), rgba(40,40,52,0)),
         bottom / cover url("/images/backgrounds/mordred-win-modal.jpg")
