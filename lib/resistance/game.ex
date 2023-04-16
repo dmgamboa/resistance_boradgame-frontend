@@ -319,9 +319,9 @@ defmodule Game.Server do
         end),
       quest_outcomes: state.quest_outcomes,
       stage: :init,
-      team_votes: state.team_votes,
+      team_votes: %{},
       quest_votes: %{},
-      team_rejection_count: state.team_rejection_count + 1,
+      team_rejection_count: state.team_rejection_count,
       winning_team: nil
     }
   end
@@ -330,24 +330,22 @@ defmodule Game.Server do
   defp clean_up(%{stage: :voting} = state) do
     Logger.log(:info, "clean_up")
 
-    case state.team_rejection_count do
-      4 ->
-        broadcast(:message, {:server, "Bad guys win!"})
-        broadcast(:update, %{state | stage: :end_game, winning_team: :bad})
-        end_game()
+    if state.team_rejection_count >= 4 do
+      broadcast(:message, {:server, "Bad guys win!"})
+      broadcast(:update, %{state | stage: :end_game, winning_team: :bad})
+      end_game()
+    else
+      :timer.send_after(3000, self(), {:end_stage, :init})
 
-      _ ->
-        :timer.send_after(3000, self(), {:end_stage, :init})
-
-        %{
-          players: Enum.map(state.players, fn player -> %Player{player | on_quest: false} end),
-          quest_outcomes: state.quest_outcomes,
-          stage: :init,
-          team_votes: state.team_votes,
-          quest_votes: %{},
-          team_rejection_count: state.team_rejection_count + 1,
-          winning_team: nil
-        }
+      %{
+        players: Enum.map(state.players, fn player -> %Player{player | on_quest: false} end),
+        quest_outcomes: state.quest_outcomes,
+        stage: :init,
+        team_votes: %{},
+        quest_votes: %{},
+        team_rejection_count: state.team_rejection_count + 1,
+        winning_team: nil
+      }
     end
   end
 
