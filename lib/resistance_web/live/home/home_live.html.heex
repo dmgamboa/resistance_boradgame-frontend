@@ -15,7 +15,7 @@
         </div>
 
         <div class="btn-group">
-            <.button  phx-click={show_modal("play_modal")}>Play</.button>
+            <.button phx-click={show_modal("play_modal")}>Play</.button>
             <.button phx-click={show_modal("help_modal")}>Help</.button>
             <.button phx-click={show_modal("credits_modal")}>Credits</.button>
         </div>
@@ -44,7 +44,8 @@
 
     <.credits_modal />
 
-    <.modal id="lobby_full_modal">
+    <%= if @is_full == true do %>
+    <.modal id="lobby_full_modal" show={true}>
         <:title>
             Sorry
         </:title>
@@ -56,4 +57,5 @@
             <.button>OK</.button>
         </:confirm>
     </.modal>
+    <% end %>
 </div>
