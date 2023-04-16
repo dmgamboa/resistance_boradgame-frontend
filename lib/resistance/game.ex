@@ -90,6 +90,11 @@ defmodule Game.Server do
     Phoenix.PubSub.subscribe(Resistance.PubSub, "game")
   end
 
+  # get max number of players for a quest
+  def max_quest_members(round) do
+    Map.get(@quest_config, round, 3)
+  end
+
   @impl true
 
   def init(pregame_state) do
@@ -452,11 +457,6 @@ defmodule Game.Server do
   # Terminate server when game ends
   defp end_game() do
     GenServer.stop(__MODULE__)
-  end
-
-  # get max number of players for a quest
-  defp max_quest_members(round) do
-    Map.get(@quest_config, round, 3)
   end
 
   # get current round
