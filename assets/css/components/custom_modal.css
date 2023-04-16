@@ -24,6 +24,36 @@
     margin-top: 5%;
 }
 
+.help-modal .rounds {
+	border-collapse: collapse;
+	margin: 0px auto;
+    width: 40%;
+}
+
+.help-modal .rounds tr, .help-modal .rounds td {
+	border: 3px solid black;
+	padding: 8px;
+	text-align: center;
+	background-color: #f2f2f2;
+	color: #444;
+    font-weight: bold;
+}
+
+.help-modal .rounds th {
+	background-color: #f2f2f2;
+	color: #444;
+	border: 3px solid black;
+    padding: 8px;
+}
+
+.credits-modal .link {
+    color: #fff338;
+}
+
+.credits-modal .link_label, .credits-modal .assets {
+    margin-left: 25%;
+}
+
 .end-game-modal.avalon-modal header {
     position: absolute;
     top: 50%;

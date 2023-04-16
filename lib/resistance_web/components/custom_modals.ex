@@ -32,7 +32,7 @@ defmodule ResistanceWeb.CustomModals do
         on their mission! Otherwise, a different Leader is randomly appointed, and the process begins
         again.
       </p>
-      <table>
+      <table class="rounds">
         <tr>
           <th>Round <br> Number</th>
           <th>Number of <br> Team Members</th>
@@ -109,23 +109,27 @@ defmodule ResistanceWeb.CustomModals do
       </p>
 
       <h2>Assets</h2>
-      <p>Fonts: Google Fonts, Cormorant</p>
-      <p>Icons: Flaticon</p>
-      <br/>
-      <br/>
-      <p>Lobby Background:<a href="https://www.artstation.com/artwork/mLqVd">
+      <p class="assets">Fonts: Google Fonts, Cormorant</p>
+      <p class="assets">Icons: Flaticon</p>
+
+      <h3>Backgrounds</h3>
+      <p class="link_label">Lobby:<a href="https://www.artstation.com/artwork/mLqVd" 
+             target="_blank" class="link">
         https://www.artstation.com/artwork/mLqVd
       </a>
       </p>
-        <p>Menu Background: <a href="https://nemoart7.artstation.com/projects/XBrRen">
+      <p class="link_label">Menu: <a href="https://nemoart7.artstation.com/projects/XBrRen" 
+             target="_blank" class="link">
           https://nemoart7.artstation.com/projects/XBrRen
           </a>
         </p>
-        <p>Play Modal Background: <a href="https://www.artstation.com/artwork/DxPgKG">
-          https://www.artstation.com/artwork/DxPgKG
+        <p class="link_label">Modal: <a href="https://www.artstation.com/artwork/DxPgKG" 
+             target="_blank" class="link">
+             https://www.artstation.com/artwork/DxPgKG
           </a>
         </p>
-        <p>Help and Credits Modal Background: <a href="https://www.pxfuel.com/en/desktop-wallpaper-xktjo">
+        <p class="link_label">Help and Credits Modal:<br/> <a href="https://www.pxfuel.com/en/desktop-wallpaper-xktjo"
+          target="_blank" class="link">
           https://www.pxfuel.com/en/desktop-wallpaper-xktjo
           </a>
         </p>
