@@ -419,13 +419,6 @@ defmodule Game.Server do
     Phoenix.PubSub.broadcast(Resistance.PubSub, "game", {event, payload})
   end
 
-  # returns a map of default votes for quest result
-  # defp default_quest_votes(players) do
-  #   Enum.reduce(players, %{}, fn p, acc ->
-  #     if p.on_quest, do: Map.put(acc, p.id, :assist), else: acc
-  #   end)
-  # end
-
   # determines if the quest succeeded or failed
   defp get_result(quest_votes) do
     if Enum.all?(quest_votes, fn {_, vote} -> vote == :assist end) do
