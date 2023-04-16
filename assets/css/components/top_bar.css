@@ -1,6 +1,7 @@
 .avalon-top-bar {
     display: flex;
     justify-content: flex-end;
+    align-items: center;
     width: 100%;
 }
 
@@ -9,9 +10,5 @@
 }
 
 .avalon-sound-toggle {
-    cursor: pointer;
-}
-
-.avalon-quit-button {
     cursor: pointer;
 }

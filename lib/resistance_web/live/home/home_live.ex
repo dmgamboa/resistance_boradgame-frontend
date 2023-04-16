@@ -4,9 +4,12 @@ defmodule ResistanceWeb.HomeLive do
 
   @impl true
   def mount(_params, session, socket) do
-    init_state = socket
+    init_state =
+      socket
       |> assign(:self, session["_csrf_token"])
       |> assign(:form, to_form(%{"name" => ""}))
+      |> assign(:is_full, false)
+
     {:ok, init_state}
   end
 
@@ -15,22 +18,26 @@ defmodule ResistanceWeb.HomeLive do
     case Pregame.Server.validate_name(name) do
       {:error, msg} ->
         {:noreply, assign(socket, :form, to_form(param, errors: [name: {msg, []}]))}
+
       _ ->
         {:noreply, assign(socket, :form, to_form(param))}
     end
   end
 
   @impl true
-  def handle_event("join", %{"name" => name} = param,  socket) do
+  def handle_event("join", %{"name" => name} = param, socket) do
     case Pregame.Server.add_player(socket.assigns.self, String.trim(name)) do
       :lobby_full ->
         # TODO: Show Lobby Full Modal
-        {:noreply, socket}
+        {:noreply, socket |> assign(:is_full, true)}
+
       :game_in_progress ->
         # TODO: Show Game in Progress Modal
         {:noreply, socket}
+
       {:error, msg} ->
         {:noreply, assign(socket, :form, to_form(param, errors: [name: {msg, []}]))}
+
       _ ->
         {:noreply, push_navigate(socket, to: "/lobby")}
     end
