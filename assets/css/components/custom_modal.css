@@ -50,10 +50,6 @@
     color: #fff338;
 }
 
-.credits-modal .link_label, .credits-modal .assets {
-    margin-left: 25%;
-}
-
 .end-game-modal.avalon-modal header {
     position: absolute;
     top: 50%;
