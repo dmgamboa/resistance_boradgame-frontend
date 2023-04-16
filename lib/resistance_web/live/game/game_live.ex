@@ -53,6 +53,10 @@ defmodule ResistanceWeb.GameLive do
       Enum.member?(no_timer_stages, state.stage) ->
         :timer.cancel(socket.assigns.timer_ref)
         socket |> assign(:time_left, nil) |> assign(:timer_ref, nil)
+      state.stage == :quest_reveal ->
+        :timer.cancel(socket.assigns.timer_ref)
+        {:ok, timer_ref} = :timer.send_interval(1000, self(), :tick)
+        socket |> assign(:time_left, 5) |> assign(:timer_ref, timer_ref)
       socket.assigns.state.stage != state.stage ->
         :timer.cancel(socket.assigns.timer_ref)
         {:ok, timer_ref} = :timer.send_interval(1000, self(), :tick)
