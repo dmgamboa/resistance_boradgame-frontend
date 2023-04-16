@@ -10,6 +10,7 @@ defmodule ResistanceWeb.LobbyLive do
       |> assign(:time_to_start, nil)
       |> assign(:timer_ref, nil)
       |> assign(:muted, false)
+      |> assign(:music_file, "lobby-music.mp3")
     {:ok, init_state}
   end
 
@@ -61,6 +62,11 @@ defmodule ResistanceWeb.LobbyLive do
   def handle_event("toggle_ready", _params,  %{assigns: %{self: self} } = socket) do
     Pregame.Server.toggle_ready(self)
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("toggle-sound", _params, socket) do
+    {:noreply, socket |> assign(:muted, !socket.assigns.muted)}
   end
 
   @impl true

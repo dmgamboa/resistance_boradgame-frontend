@@ -32,17 +32,10 @@ let Hooks = {
     },
     ToggleSound : {
         mounted() {
-            console.log("ToggleSound mounted")
             this.el.addEventListener("click", e => {
-                console.log('clicked')
-              let audioEls = document.getElementsByTagName("audio");
-              console.log(audioEls)              
-                if (audioEls[0].muted == false) {
-                  audioEls[0].muted = true;
-                } else {
-                  audioEls[0].muted = false;
-                }
-              
+                this.pushEvent("toggle-sound", {});
+                let audioEls = document.getElementsByTagName("audio");
+                audioEls[0].muted = !audioEls[0].muted
             });
         },
     },

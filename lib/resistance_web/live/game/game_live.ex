@@ -12,6 +12,7 @@ defmodule ResistanceWeb.GameLive do
     |> assign(:time_left, nil)
     |> assign(:timer_ref, nil)
     |> assign(:muted, false)
+    |> assign(:music_file, "game-music.mp3")
     cond do
       GenServer.whereis(Game.Server) == nil || !Game.Server.is_player(id) ->
         {:ok, init_state}
@@ -102,6 +103,11 @@ defmodule ResistanceWeb.GameLive do
       Game.Server.message(socket.assigns.self.id, msg)
     end
     {:noreply, socket |> assign(:form, to_form(%{"message" => ""}))}
+  end
+
+  @impl true
+  def handle_event("toggle-sound", _params, socket) do
+    {:noreply, socket |> assign(:muted, !socket.assigns.muted)}
   end
 
   defp get_self(id, players) do
