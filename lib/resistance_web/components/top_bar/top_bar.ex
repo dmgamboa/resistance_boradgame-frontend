@@ -4,6 +4,7 @@ defmodule ResistanceWeb.TopBar do
   import ResistanceWeb.CoreComponents
   import ResistanceWeb.TopBar.SoundToggle
   import ResistanceWeb.TopBar.QuitButton
+  alias ResistanceWeb.TopBar.SoundToggle
 
   @doc """
   Creates the top bar
@@ -15,7 +16,7 @@ defmodule ResistanceWeb.TopBar do
   def top_bar(assigns) do
     ~H"""
         <div class="avalon-top-bar">
-          <.sound_toggle muted={@muted} music_file={@music_file} />
+          <.live_component module={SoundToggle} muted={@muted} music_file={@music_file} id="sound-toggle" />
           <Heroicons.arrow_right_on_rectangle class="w-5 h-5 cursor-pointer" />
         </div>
     """

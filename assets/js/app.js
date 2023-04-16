@@ -30,15 +30,6 @@ let Hooks = {
             input.value = value
         },
     },
-    ToggleSound : {
-        mounted() {
-            this.el.addEventListener("click", e => {
-                this.pushEvent("toggle-sound", {});
-                let audioEls = document.getElementsByTagName("audio");
-                audioEls[0].muted = !audioEls[0].muted
-            });
-        },
-    },
 }
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")

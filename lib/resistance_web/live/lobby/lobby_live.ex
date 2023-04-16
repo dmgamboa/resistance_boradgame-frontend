@@ -65,11 +65,6 @@ defmodule ResistanceWeb.LobbyLive do
   end
 
   @impl true
-  def handle_event("toggle-sound", _params, socket) do
-    {:noreply, socket |> assign(:muted, !socket.assigns.muted)}
-  end
-
-  @impl true
   def terminate(_reason, %{assigns: %{self: self} }) do
     Pregame.Server.remove_player(self)
   end

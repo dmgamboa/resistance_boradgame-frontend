@@ -105,11 +105,6 @@ defmodule ResistanceWeb.GameLive do
     {:noreply, socket |> assign(:form, to_form(%{"message" => ""}))}
   end
 
-  @impl true
-  def handle_event("toggle-sound", _params, socket) do
-    {:noreply, socket |> assign(:muted, !socket.assigns.muted)}
-  end
-
   defp get_self(id, players) do
     Enum.find(players, fn p -> p.id == id end)
   end
