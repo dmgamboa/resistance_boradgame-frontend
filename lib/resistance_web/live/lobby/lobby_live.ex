@@ -9,6 +9,7 @@ defmodule ResistanceWeb.LobbyLive do
       |> assign(:players, %{})
       |> assign(:time_to_start, nil)
       |> assign(:timer_ref, nil)
+      |> assign(:muted, false)
     {:ok, init_state}
   end
 
