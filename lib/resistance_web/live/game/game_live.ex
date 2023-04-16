@@ -11,6 +11,7 @@ defmodule ResistanceWeb.GameLive do
     |> assign(:messages, [])
     |> assign(:time_left, nil)
     |> assign(:timer_ref, nil)
+    |> assign(:muted, false)
     cond do
       GenServer.whereis(Game.Server) == nil || !Game.Server.is_player(id) ->
         {:ok, init_state}
