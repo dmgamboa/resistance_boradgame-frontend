@@ -125,8 +125,10 @@ defmodule ResistanceWeb.CustomModals do
         </p>
         <p class="link_label">Modal: <a href="https://www.artstation.com/artwork/DxPgKG" 
              target="_blank" class="link">
+             https://www.artstation.com/artwork/DxPgKG
+          </a>
         </p>
-        <p class="link_label">Help and Credits Modal Background: <a href="https://www.pxfuel.com/en/desktop-wallpaper-xktjo"
+        <p class="link_label">Help and Credits Modal:<br/> <a href="https://www.pxfuel.com/en/desktop-wallpaper-xktjo"
           target="_blank" class="link">
           https://www.pxfuel.com/en/desktop-wallpaper-xktjo
           </a>
