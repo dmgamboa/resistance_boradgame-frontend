@@ -19,6 +19,7 @@ defmodule ResistanceWeb.Game.SideBar do
           <.quest_outcomes quest_outcomes={@quest_outcomes}/>
           <.role role={@self.role} />
           <.player_list
+            round={length(@quest_outcomes) + 1}
             players={@players}
             self={@self}
             team_votes={@team_votes}
@@ -83,6 +84,7 @@ defmodule ResistanceWeb.Game.SideBar do
   Creates an interactable list of players in the game
   """
 
+  attr :round, :any, required: true
   attr :players, :any, default: []
   attr :self, Player, required: true
   attr :stage, :any, required: true
@@ -123,7 +125,7 @@ defmodule ResistanceWeb.Game.SideBar do
                 </span>
 
                 <span class="quest">
-                  <%= if @stage == :quest && p.on_quest do %>
+                  <%= if (@stage == :quest || @stage == :voting) && p.on_quest do %>
                   🏆
                   <% end %>
                 </span>
@@ -136,7 +138,7 @@ defmodule ResistanceWeb.Game.SideBar do
                   </.button>
                 <% end %>
                 <%= if !p.on_quest
-                  && Enum.count(@players, fn p -> p.on_quest end) < 3 do %>
+                  && Enum.count(@players, fn p -> p.on_quest end) < Game.Server.max_quest_members(@round) do %>
                   <.button phx-click={@on_select_player} phx-value-player={p.id}>
                     Select
                   </.button>
