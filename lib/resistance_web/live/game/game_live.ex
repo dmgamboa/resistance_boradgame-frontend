@@ -4,34 +4,27 @@ defmodule ResistanceWeb.GameLive do
 
   @impl true
   def mount(_params, session, socket) do
-    id = session["_csrf_token"]
-    init_state = socket
-    |> assign(:self, session["_csrf_token"])
-    |> assign(:form, to_form(%{"message" => ""}))
-    |> assign(:messages, [])
-    |> assign(:time_left, nil)
-    |> assign(:timer_ref, nil)
-    |> assign(:muted, false)
-    |> assign(:music_file, "game-music.mp3")
-    cond do
-      GenServer.whereis(Game.Server) == nil || !Game.Server.is_player(id) ->
-        {:ok, init_state}
-      true ->
-        Game.Server.subscribe()
-        state = Game.Server.get_state
-        {:ok, init_state
-          |> assign(:state, state)
-          |> assign(:self, get_self(id, state.players))}
-    end
+    {:ok, socket
+      |> assign(:token, session["_csrf_token"])
+      |> assign(:form, to_form(%{"message" => ""}))
+      |> assign(:messages, [])
+      |> assign(:time_left, nil)
+      |> assign(:timer_ref, nil)
+      |> assign(:muted, false)
+      |> assign(:music_file, "game-music.mp3")}
   end
 
   @impl true
-  def handle_params(_params, _url, %{assigns: %{self: self} } = socket) do
+  def handle_params(_params, _url, %{assigns: %{token: token} } = socket) do
     cond do
-      GenServer.whereis(Game.Server) == nil || !Game.Server.is_player(self.id) ->
+      GenServer.whereis(Game.Server) == nil || !Game.Server.is_player(token) ->
         {:noreply, push_navigate(socket, to: "/")}
       true ->
-        {:noreply, socket}
+        Game.Server.subscribe()
+        state = Game.Server.get_state
+        {:noreply, socket
+          |> assign(:state, state)
+          |> assign(:self, get_self(token, state.players))}
     end
   end
 
