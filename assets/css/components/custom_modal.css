@@ -68,3 +68,8 @@
     background: linear-gradient(to bottom, rgba(40, 40, 52, 1), rgba(40, 40, 52, 0)),
         bottom / cover url("/images/backgrounds/mordred-win-modal.jpg")
 }
+
+.quit-modal.avalon-modal p {
+    text-align: center;
+    padding: 1rem 0;
+}

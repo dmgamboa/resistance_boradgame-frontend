@@ -17,12 +17,11 @@ defmodule ResistanceWeb.Router do
   scope "/", ResistanceWeb do
     pipe_through :browser
 
-    live "/", HomeLive, :home
     live "/lobby", LobbyLive, :lobby
     live "/game", GameLive, :game
 
     # catch-all route
-    get "/*path", PageController, :not_found
+    live "/*path", HomeLive, :home
   end
 
 end
