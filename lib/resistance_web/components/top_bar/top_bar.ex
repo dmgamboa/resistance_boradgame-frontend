@@ -3,6 +3,7 @@ defmodule ResistanceWeb.TopBar do
 
   alias ResistanceWeb.TopBar.QuitButton
   alias ResistanceWeb.TopBar.SoundToggle
+  alias ResistanceWeb.TopBar.HowToPlayShortcut
 
   @doc """
   Creates the top bar
@@ -16,6 +17,7 @@ defmodule ResistanceWeb.TopBar do
   def top_bar(assigns) do
     ~H"""
         <div class="avalon-top-bar">
+          <.live_component module={HowToPlayShortcut} id="how-to-play-shortcut-button" />
           <.live_component module={SoundToggle} muted={@muted} music_file={@music_file} id="sound-toggle" />
           <%= if @show_quit do %>
             <.live_component module={QuitButton} id={@id}/>

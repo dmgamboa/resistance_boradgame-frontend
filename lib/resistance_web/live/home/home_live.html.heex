@@ -3,6 +3,12 @@
         <img src={ ~p"/images/backgrounds/menu-bg.jpg" } alt="Castle entrance">
     </div>
 
+    <.top_bar
+        muted={@muted}
+        music_file={@music_file}
+        show_quit={false}
+    />
+
     <div class="logo">
         <img src={ ~p"/images/components/logo.png" } alt="Avalon logo">
     </div>
@@ -20,10 +26,6 @@
             <.button phx-click={show_modal("credits_modal")}>Credits</.button>
         </div>
     </div>
-
-    <audio src="/audio/home-music.mp3" autoplay loop preload="auto">
-        Your browser does not support the audio element.
-    </audio>
 
     <.modal id="play_modal">
         <:title>
@@ -58,4 +60,6 @@
         </:confirm>
     </.modal>
     <% end %>
+
+    <.footer />
 </div>

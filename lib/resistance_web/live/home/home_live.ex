@@ -9,6 +9,8 @@ defmodule ResistanceWeb.HomeLive do
       |> assign(:self, session["_csrf_token"])
       |> assign(:form, to_form(%{"name" => ""}))
       |> assign(:is_full, false)
+      |> assign(:muted, false)
+      |> assign(:music_file, "home-music.mp3")
 
     {:ok, init_state}
   end
