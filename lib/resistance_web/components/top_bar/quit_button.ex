@@ -32,6 +32,6 @@ defmodule ResistanceWeb.TopBar.QuitButton do
     if GenServer.whereis(Game.Server) do
       Game.Server.remove_player(id)
     end
-    {:noreply, socket}
+    {:noreply, push_navigate(socket, to: "/")}
   end
 end
