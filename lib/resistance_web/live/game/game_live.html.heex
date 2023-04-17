@@ -3,7 +3,7 @@
         <img src="images/backgrounds/game-bg.jpg" alt="Forest">
     </div>
 
-    <.top_bar />
+    <.top_bar muted={@muted} music_file={@music_file} />
 
     <%= if @state != nil do %>
         <div class="content">
@@ -59,9 +59,6 @@
     <% end %>
 </div>
 
-<audio id="game-audio" src="/audio/game-music.mp3" autoplay loop preload="auto">
-        Your browser does not support the audio element.
-</audio>
 
 <%= if @state != nil && @state.stage == :end_game do %>
     <.end_game_modal

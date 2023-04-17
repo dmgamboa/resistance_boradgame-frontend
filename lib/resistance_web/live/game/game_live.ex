@@ -12,6 +12,7 @@ defmodule ResistanceWeb.GameLive do
     |> assign(:time_left, nil)
     |> assign(:timer_ref, nil)
     |> assign(:muted, false)
+    |> assign(:music_file, "game-music.mp3")
     cond do
       GenServer.whereis(Game.Server) == nil || !Game.Server.is_player(id) ->
         {:ok, init_state}

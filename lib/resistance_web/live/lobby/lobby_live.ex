@@ -10,6 +10,7 @@ defmodule ResistanceWeb.LobbyLive do
       |> assign(:time_to_start, nil)
       |> assign(:timer_ref, nil)
       |> assign(:muted, false)
+      |> assign(:music_file, "lobby-music.mp3")
     {:ok, init_state}
   end
 
