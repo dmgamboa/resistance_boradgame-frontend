@@ -3,7 +3,12 @@
         <img src={ ~p"/images/backgrounds/lobby-bg.jpg" } alt="Castle entrance">
     </div>
 
-    <.top_bar muted={@muted} music_file={@music_file} />
+    <.top_bar
+        muted={@muted}
+        music_file={@music_file}
+        show_quit={true}
+        id={@self}
+    />
 
     <div class="text">
         <h1 class="title">Lobby (<%= Enum.count(@players) %> / 5 players)</h1>

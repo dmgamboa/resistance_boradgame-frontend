@@ -3,7 +3,12 @@
         <img src="images/backgrounds/game-bg.jpg" alt="Forest">
     </div>
 
-    <.top_bar muted={@muted} music_file={@music_file} />
+    <.top_bar
+        muted={@muted}
+        music_file={@music_file}
+        show_quit={true}
+        id={@self.id}
+    />
 
     <%= if @state != nil do %>
         <div class="content">

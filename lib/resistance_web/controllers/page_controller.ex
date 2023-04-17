@@ -6,4 +6,8 @@ defmodule ResistanceWeb.PageController do
     # so skip the default app layout.
     render(conn, :home, layout: false)
   end
+
+  def not_found(conn, _params) do
+    render(conn, "not_found.html", assigns: %{})
+  end
 end
