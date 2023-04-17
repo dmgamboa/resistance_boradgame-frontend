@@ -88,6 +88,7 @@ defmodule ResistanceWeb do
       import ResistanceWeb.Gettext
       import ResistanceWeb.CustomModals
       import ResistanceWeb.TopBar
+      import ResistanceWeb.Footer
       import ResistanceWeb.Game.ChatBox
       import ResistanceWeb.Game.MainCard
       import ResistanceWeb.Game.SideBar
